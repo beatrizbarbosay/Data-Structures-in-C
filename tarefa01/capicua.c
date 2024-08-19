@@ -1,5 +1,17 @@
 #include <stdio.h>
 
+long int inverte (long int numero) { //inverte o numero
+    long int resto, numeroinvertido=0, numero2;
+    numero2 = numero;
+    while (numero2 !=0) {
+        resto = numero2 % 10;
+        numero2 = numero2 / 10;
+        numeroinvertido *= 10;
+        numeroinvertido += resto;       
+    }
+    return numeroinvertido;
+}
+
 int main ()
 { 
     long int quantidade = 0; //primeira entrada
@@ -10,13 +22,8 @@ int main ()
         long int numero=0;
         scanf("%ld" ,&numero);
 
-        long int numeroinvertido = 0, resto, numero2 = numero; //invertendo o número
-            while (numero2 !=0) {
-            resto = numero2 % 10;
-            numero2 = numero2 / 10;
-            numeroinvertido *= 10;
-            numeroinvertido += resto;
-             }
+        long int numeroinvertido = inverte(numero);
+
         if (numeroinvertido == numero) { //comparando o numero invertido com o original
             printf("%ld eh capicua\n", numero);   
         } else {
