@@ -30,7 +30,7 @@ void janela(double**pontos, int d, int n){
     }
     for(int i=0; i<n; i++){
         for(int j=0; j<d; j++){
-        matriz2[i][j]=0.0;
+            matriz2[i][j]=0.0;
         }
     }
     for(int j=0; j<d; j++){
@@ -62,7 +62,7 @@ void janela(double**pontos, int d, int n){
 
 void normal(double**pontos, int d, int n){
     double*norma=(double*)malloc(n*sizeof(double)); //vetor que vai armazenar as normas de cada coluna
-    for(int j=0; j<d; j++){
+    for(int j=0; j<n; j++){
         norma[j]=0.0;
     }
     for(int i=0; i<n; i++){
