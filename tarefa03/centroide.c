@@ -24,10 +24,15 @@ void calcularmedia(double**matriz, int d, int n, char tipo[]){ //funcao para cal
 }
 
 void janela(double**pontos, int d, int n){
-    double**matriz2=((double**)malloc(n*sizeof(double*))); //matriz para armazenar os valores normalizados
+    double** matriz2=((double**)malloc(n*sizeof(double*))); //matriz para armazenar os valores normalizados
     for(int i=0; i<n; i++){
         matriz2[i]=(double*)malloc(d*sizeof(double));
-    } 
+    }
+    for(int i=0; i<n; i++){
+        for(int j=0; j<d; j++){
+        matriz2[i][j]=0.0;
+        }
+    }
     for(int j=0; j<d; j++){
         double maximo=pontos[0][j]; //coloca o primeiro elemento da coluna como maximo e minimo para o comparar com o resto
         double minimo=pontos[0][j];
