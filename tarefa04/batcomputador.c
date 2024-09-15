@@ -6,6 +6,9 @@
 int duplicar_memoria(int**batmemoria, int memoriatotal){ //aumentar a memória quando necessário
     int novotamanho = (memoriatotal)*2; //pega o valor da memoria totla antiga e duplica
     int *novamemoria= malloc(novotamanho*sizeof(int)); //define um novo ponteiro para a memoria com o tamanho atualizado
+    for(int i=0; i<novotamanho; i++){ //inicializa novo vetor
+        novamemoria[i]=0;
+    }
     for(int i=0; i<memoriatotal; i++){ //coloca os elementos da memoria antiga na nova memoria
         novamemoria[i]=(*batmemoria)[i]; 
     }
@@ -29,11 +32,22 @@ void batalloc(int **batmemoria, int *memoriausada, int *memoriatotal, int tamanh
     printf("%d\n", inicio);
 }
 
+void batfree(int *batmemoria, int liberar, int memoriausada){
+    int inicio = batmemoria[liberar];
+    for(int i=liberar; i<liberar+inicio+1; i++){
+        batmemoria[i]= 0;    
+    }
+    for(int i=0; i<memoriausada; i++){
+        printf("%d", batmemoria[i]);
+    }
+}
+
+
 int main(void){
     int memoriatotal=8; //define o valor inicial da bat memoria
     int memoriausada=0;
     int *batmemoria = malloc(memoriatotal*sizeof(int)); //cria um vetor inicial com o tamanho da bat memoria
-    for(int i=0; i<memoriatotal; i++){
+    for(int i=0; i<memoriatotal; i++){ //inicializa o vetor
         batmemoria[i]=0;
     }
     int numero =0;
@@ -41,13 +55,18 @@ int main(void){
     for(int i=0; i<numero; i++){
         char operacao[MAX];
         scanf("%s", operacao);
-        if(strcmp(operacao, "bat-alloc")==0){
+        if(strcmp(operacao, "bat-alloc")==0){ //operacao para bat-alloc
             int tamanho=0;
             scanf("%d",&tamanho);
             batalloc(&batmemoria, &memoriausada, &memoriatotal, tamanho);
-
         }    
         if(strcmp(operacao, "bat-free")==0){
+            int liberar=0;
+            scanf("%d", &liberar);
+            batfree(batmemoria, liberar, memoriausada);
+
+
+
             //funcao bat free
         }
         if(strcmp(operacao, "bat-print")==0){
