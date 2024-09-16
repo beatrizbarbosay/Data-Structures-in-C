@@ -8,7 +8,7 @@ int duplicar_memoria(int**batmemoria, int memoriatotal){ //aumentar a memória q
     int novotamanho = (memoriatotal)*2; //pega o valor da memoria totla antiga e duplica
     int *novamemoria= malloc(novotamanho*sizeof(int)); //define um novo ponteiro para a memoria com o tamanho atualizado
     for(int i=0; i<novotamanho; i++){ //inicializa novo vetor
-        novamemoria[i]=0;
+        novamemoria[i]=LIXO;
     }
     for(int i=0; i<memoriatotal; i++){ //coloca os elementos da memoria antiga na nova memoria
         novamemoria[i]=(*batmemoria)[i]; 
@@ -40,7 +40,7 @@ void batfree(int *batmemoria, int liberar){
     }
 }
 
-void reduzir_memoria(int *memoriatotal, int **batmemoria){
+void reduzir_memoria(int *memoriatotal, int **batmemoria, int memoriausada){
     int quartomemoria = (*memoriatotal)/4;
     int reduzir=1;
     for(int i=quartomemoria; i<=*memoriatotal; i++){
@@ -50,16 +50,17 @@ void reduzir_memoria(int *memoriatotal, int **batmemoria){
         }
     }
     if(reduzir==1 && (*memoriatotal>8)){
-        *memoriatotal=*memoriatotal/2;
-        int *novamemoria= malloc((*memoriatotal)*sizeof(int)); 
-        for(int i=0; i<*memoriatotal; i++){ 
-            novamemoria[i]=0;
+        int novotamanho =*memoriatotal/2;
+        int *novamemoria= malloc(novotamanho*sizeof(int)); 
+        for(int i=0; i<novotamanho; i++){ 
+            novamemoria[i]=LIXO;
         }
-        for(int i=0; i<*memoriatotal; i++){
+        for(int i=0; i<memoriausada; i++){
             novamemoria[i]=(*batmemoria)[i]; 
         }
         free(*batmemoria);
         *batmemoria = novamemoria;
+        *memoriatotal=novotamanho;
     }
 }
 
@@ -72,6 +73,17 @@ void batprint(int *batmemoria){
     }
     printf("\n");
 }
+
+void batuso(int *batmemoria, int memoriatotal, int memoriausada){
+    int memoria_aloc = 0;
+    for(int i=0; i<memoriausada; i++){
+        if(batmemoria[i]!= LIXO){
+            memoria_aloc++;
+        }
+    }
+    printf("%d de %d\n", memoria_aloc, memoriatotal);
+}
+
 int main(void){
     int memoriatotal=8; //define o valor inicial da bat memoria
     int memoriausada=0;
@@ -93,16 +105,14 @@ int main(void){
             int liberar=0;
             scanf("%d", &liberar);
             batfree(batmemoria, liberar);
-            reduzir_memoria(&memoriatotal, &batmemoria);
+            reduzir_memoria(&memoriatotal, &batmemoria, memoriausada);
         }
         if(strcmp(operacao, "bat-print")==0){
             batprint(batmemoria);
         }
         if(strcmp(operacao, "bat-uso")==0){
-          //funcao bat uso
+            batuso(batmemoria, memoriatotal, memoriausada);
         }
     }
-
-
     return 0;
 }
