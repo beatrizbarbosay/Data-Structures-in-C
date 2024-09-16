@@ -33,20 +33,45 @@ void batalloc(int **batmemoria, int *memoriausada, int *memoriatotal, int tamanh
     printf("%d\n", inicio);
 }
 
-void batfree(int *batmemoria, int liberar, int memoriausada){
+void batfree(int *batmemoria, int liberar){
     int inicio = batmemoria[liberar];
     for(int i=liberar; i<liberar+inicio+1; i++){
         batmemoria[i]= LIXO;    
     }
-    for(int i=0; i<memoriausada; i++){
-        printf("%d", batmemoria[i]);
+}
+
+void reduzir_memoria(int *memoriatotal, int **batmemoria){
+    int quartomemoria = (*memoriatotal)/4;
+    int reduzir=1;
+    for(int i=quartomemoria; i<=*memoriatotal; i++){
+        if((*batmemoria[i])!= LIXO){
+            reduzir=0;
+            break;
+        }
+    }
+    if(reduzir==1 && (*memoriatotal>8)){
+        *memoriatotal=*memoriatotal/2;
+        int *novamemoria= malloc((*memoriatotal)*sizeof(int)); 
+        for(int i=0; i<*memoriatotal; i++){ 
+            novamemoria[i]=0;
+        }
+        for(int i=0; i<*memoriatotal; i++){
+            novamemoria[i]=(*batmemoria)[i]; 
+        }
+        free(*batmemoria);
+        *batmemoria = novamemoria;
     }
 }
 
-void reduzir_memoria(){
-    
+void batprint(int *batmemoria){
+    int endereco=0;
+    scanf("%d", &endereco);
+    int printar= batmemoria[endereco];
+    for(int i=endereco+1; i<endereco+printar+1; i++){
+        printf("%d ", batmemoria[i]);
+    }
+    printf("\n");
 }
-
 int main(void){
     int memoriatotal=8; //define o valor inicial da bat memoria
     int memoriausada=0;
@@ -67,14 +92,11 @@ int main(void){
         if(strcmp(operacao, "bat-free")==0){
             int liberar=0;
             scanf("%d", &liberar);
-            batfree(batmemoria, liberar, memoriausada);
-
-
-
-            //funcao bat free
+            batfree(batmemoria, liberar);
+            reduzir_memoria(&memoriatotal, &batmemoria);
         }
         if(strcmp(operacao, "bat-print")==0){
-            //funcao bat print
+            batprint(batmemoria);
         }
         if(strcmp(operacao, "bat-uso")==0){
           //funcao bat uso
