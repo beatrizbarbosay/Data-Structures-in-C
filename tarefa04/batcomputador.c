@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define MAX 50
+#define LIXO 0xAB167891
 
 int duplicar_memoria(int**batmemoria, int memoriatotal){ //aumentar a memória quando necessário
     int novotamanho = (memoriatotal)*2; //pega o valor da memoria totla antiga e duplica
@@ -35,13 +36,16 @@ void batalloc(int **batmemoria, int *memoriausada, int *memoriatotal, int tamanh
 void batfree(int *batmemoria, int liberar, int memoriausada){
     int inicio = batmemoria[liberar];
     for(int i=liberar; i<liberar+inicio+1; i++){
-        batmemoria[i]= 0;    
+        batmemoria[i]= LIXO;    
     }
     for(int i=0; i<memoriausada; i++){
         printf("%d", batmemoria[i]);
     }
 }
 
+void reduzir_memoria(){
+    
+}
 
 int main(void){
     int memoriatotal=8; //define o valor inicial da bat memoria
