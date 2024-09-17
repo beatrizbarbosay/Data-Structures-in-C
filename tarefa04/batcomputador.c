@@ -49,6 +49,7 @@ void reduzir_memoria(int *memoriatotal, int **batmemoria, int memoriausada){
             break;
         }
     }
+    
     if(reduzir==1 && (*memoriatotal>8)){
         int novotamanho =*memoriatotal/2;
         int *novamemoria= malloc(novotamanho*sizeof(int)); 
