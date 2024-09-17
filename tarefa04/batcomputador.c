@@ -20,13 +20,13 @@ int duplicar_memoria(int**batmemoria, int memoriatotal){ //aumentar a memória q
 
 void batalloc(int **batmemoria, int *memoriausada, int *memoriatotal, int tamanho){ //alocar novos vetores na batmemoria
     int inicio= -1; 
-    for(int i=0; i<*memoriatotal; i++){//verifica qual o primeiro espaco livre da memoria
-        if((*batmemoria)[i]==LIXO){//encontra espaco livre
+    for(int j=0; j<*memoriatotal; j++){//verifica qual o primeiro espaco livre da memoria
+        if((*batmemoria)[j]==LIXO){//encontra espaco livre
             int livre=0; 
-            for(int j=i; j<*memoriatotal && (*batmemoria)[j]==LIXO; j++){ //verifica se o tamanho é o suficiente para alocar o vetor
+            for(int k=j; k<*memoriatotal && (*batmemoria)[k]==LIXO; k++){ //verifica se o tamanho é o suficiente para alocar o vetor
                 livre++;
                 if(livre>=tamanho+1){//tem espaco suficiente
-                    inicio=i; 
+                    inicio=j; 
                     break;
                 }
             }
@@ -40,8 +40,8 @@ void batalloc(int **batmemoria, int *memoriausada, int *memoriatotal, int tamanh
         inicio=*memoriausada;
     }
     (*batmemoria)[inicio]=tamanho; //define o int tamanho como primeiro elemento do vetor
-    for(int i=1; i<=tamanho; i++){ //aloca os elementos na batmemoria
-        scanf("%d", &(*batmemoria)[inicio+i]);
+    for(int j=1; j<=tamanho; j++){ //aloca os elementos na batmemoria
+        scanf("%d", &(*batmemoria)[inicio+j]);
     }
     if(inicio==*memoriausada){  //aumenta a memória usada
         *memoriausada+=tamanho+1;
@@ -50,15 +50,21 @@ void batalloc(int **batmemoria, int *memoriausada, int *memoriatotal, int tamanh
     printf("%d\n", inicio);
 }
 
-void batfree(int *batmemoria, int liberar){
+void batfree(int **batmemoria, int liberar, int memoriatotal, int *memoriausada){
     int inicio = 0;
-    inicio=batmemoria[liberar]; //a partir de qual espaço da memoria quer começar a liberar
+    inicio=(*batmemoria)[liberar]; //a partir de qual espaço da memoria quer começar a liberar
     for(int i=liberar; i<=liberar+inicio; i++){ //libera todo o resto do vetor
-        batmemoria[i]= LIXO;
+        (*batmemoria)[i]= LIXO;
+    }
+    for(int j = memoriatotal; j>8; j--){
+            if((*batmemoria)[j] != LIXO){
+                *memoriausada = j+1;
+                break;
+            }
     }
 }
 
-void reduzir_memoria(int *memoriatotal, int **batmemoria, int memoriausada){
+void reduzir_memoria(int *memoriatotal, int **batmemoria, int *memoriausada){
     while((*memoriatotal>8)){
         int quartomemoria= (*memoriatotal)/4;
         int reduzir=1;
@@ -124,8 +130,8 @@ int main(void){
         if(strcmp(operacao, "bat-free")==0){
             int liberar=0;
             scanf("%d", &liberar);
-            batfree(batmemoria, liberar);
-            reduzir_memoria(&memoriatotal, &batmemoria, memoriausada);
+            batfree(&batmemoria, liberar, memoriatotal, &memoriausada);
+            reduzir_memoria(&memoriatotal, &batmemoria, &memoriausada);
         }
         if(strcmp(operacao, "bat-print")==0){
             batprint(batmemoria);
