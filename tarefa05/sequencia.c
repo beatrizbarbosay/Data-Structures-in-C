@@ -78,6 +78,54 @@ void inverter_prefixo(lista *sequencia, int posicao){
     sequencia->inicio= antecessor; //atualiza o novo inicio
 }
 
+void printar_sufixo(lista *sequencia, int posicao){
+    ponteiro atual= sequencia->inicio;
+    char nucleos[MAX];
+    int i=0;
+    while(atual!=NULL && i<posicao){
+        nucleos[i]= atual->nucleo;
+        atual= atual->prox;
+        i++;
+    }
+    for(int j= i-1; j>=0; j--){
+        printf("%c ", nucleos[j]);
+    }
+}
+
+void inverter_sufixo(lista *sequencia, int posicao){
+    ponteiro atual= sequencia->inicio;
+    int tamanho=0;
+    while(atual !=NULL){
+        atual= atual->prox;
+        tamanho++;
+    }
+    int comecar = tamanho - posicao;
+    atual = sequencia->inicio; //cria 3 ponteiros auxiliares
+    ponteiro antecessor= NULL;
+    ponteiro sucessor= NULL;
+    for(int i=0; i<comecar; i++){
+        antecessor=atual;
+        atual= atual->prox;
+    }
+    ponteiro inicio2 = atual;
+    for(int i=0; i<posicao; i++){ //percorre ate a posicao que é pra inverter
+        sucessor= atual->prox; //define o sucessor do atual
+        atual->prox= antecessor; //atual aponta pro antecessor
+        antecessor= atual; //atualiza o antecessor
+        atual= sucessor; //atualiza o sucessor
+    }
+    if(comecar==0){
+        sequencia->inicio = antecessor;
+    }else{
+        ponteiro invertida = sequencia->inicio;
+        for(int i=0; i<comecar-1; i++){
+            invertida= invertida->prox;
+        }
+        invertida->prox = antecessor;
+    }
+    inicio2->prox= atual;
+}
+
 void imprimir(lista *sequencia){
     for(ponteiro atual=sequencia->inicio; atual !=NULL; atual = atual->prox){
         printf("%c ", atual->nucleo);
@@ -114,7 +162,12 @@ int main(void){
             printar_prefixo(sequencia,prefixo);
         }
         if(strcmp(comando,"inverter-sufixo")==0){
-            
+            int sufixo=0;
+            scanf("%d", &sufixo);
+            printar_sufixo(sequencia, sufixo);
+            printf("->");
+            inverter_sufixo(sequencia, sufixo);
+            printar_sufixo(sequencia, sufixo); 
         }
         if(strcmp(comando,"transpor")==0){
             
