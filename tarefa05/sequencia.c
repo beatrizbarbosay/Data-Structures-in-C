@@ -82,12 +82,12 @@ void printar_sufixo(lista *sequencia, int posicao){
     ponteiro atual= sequencia->inicio;
     char nucleos[MAX];
     int i=0;
-    while(atual!=NULL && i<posicao){
+    while(atual!=NULL){
         nucleos[i]= atual->nucleo;
         atual= atual->prox;
         i++;
     }
-    for(int j= i-1; j>=0; j--){
+    for(int j= i-posicao; j<i; j++){
         printf("%c ", nucleos[j]);
     }
 }
@@ -103,6 +103,7 @@ void inverter_sufixo(lista *sequencia, int posicao){
     atual = sequencia->inicio; //cria 3 ponteiros auxiliares
     ponteiro antecessor= NULL;
     ponteiro sucessor= NULL;
+
     for(int i=0; i<comecar; i++){
         antecessor=atual;
         atual= atual->prox;
@@ -157,7 +158,7 @@ int main(void){
             int prefixo=0;
             scanf("%d", &prefixo);
             printar_prefixo(sequencia, prefixo);
-            printf("->");
+            printf("-> ");
             inverter_prefixo(sequencia, prefixo); 
             printar_prefixo(sequencia,prefixo);
         }
@@ -165,7 +166,7 @@ int main(void){
             int sufixo=0;
             scanf("%d", &sufixo);
             printar_sufixo(sequencia, sufixo);
-            printf("->");
+            printf("-> ");
             inverter_sufixo(sequencia, sufixo);
             printar_sufixo(sequencia, sufixo); 
         }
