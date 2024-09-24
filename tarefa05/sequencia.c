@@ -52,6 +52,32 @@ void remover(lista *sequencia, int posicao){
     free(atual);
 }
 
+void printar_prefixo(lista *sequencia, int posicao){
+    ponteiro atual= sequencia->inicio;
+    int i=0;
+    while(atual!=NULL && i<posicao){
+        printf("%c ", atual->nucleo);
+        atual= atual->prox;
+        i++;
+    }
+}
+
+void inverter_prefixo(lista *sequencia, int posicao){
+    ponteiro atual = sequencia->inicio; //cria 3 ponteiros auxiliares
+    ponteiro antecessor= NULL;
+    ponteiro sucessor= NULL;
+    int i=0;
+    while(atual!=NULL && i<posicao){ //percorre ate a posicao que é pra inverter
+        sucessor= atual->prox; //define o sucessor do atual
+        atual->prox= antecessor; //atual aponta pro antecessor
+        antecessor= atual; //atualiza o antecessor
+        atual= sucessor; //atualiza o sucessor
+        i++;
+    }
+    sequencia->inicio->prox=atual; //conecta com o resto da lista
+    sequencia->inicio= antecessor; //atualiza o novo inicio
+}
+
 void imprimir(lista *sequencia){
     for(ponteiro atual=sequencia->inicio; atual !=NULL; atual = atual->prox){
         printf("%c ", atual->nucleo);
@@ -80,7 +106,12 @@ int main(void){
             remover(sequencia, posremover);
         }
         if(strcmp(comando,"inverter-prefixo")==0){
-            
+            int prefixo=0;
+            scanf("%d", &prefixo);
+            printar_prefixo(sequencia, prefixo);
+            printf("->");
+            inverter_prefixo(sequencia, prefixo); 
+            printar_prefixo(sequencia,prefixo);
         }
         if(strcmp(comando,"inverter-sufixo")==0){
             
