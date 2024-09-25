@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX 50
+#define MAX 1000
 
 typedef struct no *ponteiro; //ponteiro para a estrutura
 struct no { //estrututa que representa cada nó da lista ligadada
@@ -13,7 +13,7 @@ typedef struct lista{ //lista ligada dos nucleos
     ponteiro inicio;
 } lista;
 
-void inserir(lista *sequencia, char caractere, int posicao){ 
+void inserir(lista *sequencia, char caractere, int posicao){ //insercao sem print para usar essa funcao no comando "transpor"depois
     ponteiro novo=malloc(sizeof(struct no)); //cria um novo nó
     novo->nucleo = caractere; //atribui o caractere
     novo->prox= NULL; //inicializa o nó
@@ -33,7 +33,7 @@ void inserir(lista *sequencia, char caractere, int posicao){
     }
 }
 
-void inserir_printar(lista *sequencia, char caractere, int posicao){ 
+void inserir_printar(lista *sequencia, char caractere, int posicao){ //insercao com print
     ponteiro novo=malloc(sizeof(struct no)); //cria um novo nó
     novo->nucleo = caractere; //atribui o caractere
     novo->prox= NULL; //inicializa o nó
@@ -117,14 +117,14 @@ void inverter_prefixo(lista *sequencia, int posicao){
 
 void printar_sufixo(lista *sequencia, int posicao){
     ponteiro atual= sequencia->inicio;
-    char nucleos[MAX];
+    char nucleos[MAX]; //cria um vetor auxiliar para armazenar os nucleos
     int i=0;
     while(atual!=NULL){
         nucleos[i]= atual->nucleo;
         atual= atual->prox;
         i++;
     }
-    for(int j= i-posicao; j<i; j++){
+    for(int j= i-posicao; j<i; j++){ //printa de tras pra frente
         printf("%c ", nucleos[j]);
     }
 }
@@ -132,36 +132,36 @@ void printar_sufixo(lista *sequencia, int posicao){
 void inverter_sufixo(lista *sequencia, int posicao){
     ponteiro atual= sequencia->inicio;
     int tamanho=0;
-    while(atual !=NULL){
+    while(atual !=NULL){ //encontra o tamanho da lista
         atual= atual->prox;
         tamanho++;
     }
-    int comecar = tamanho - posicao;
-    atual = sequencia->inicio; //cria 3 ponteiros auxiliares
-    ponteiro antecessor= NULL;
+    int comecar = tamanho - posicao; //a partir da onde começa a inverter
+    atual = sequencia->inicio; //redefine atual
+    ponteiro antecessor= NULL; //cria mais 2 ponteiros auxiliares
     ponteiro sucessor= NULL;
 
-    for(int i=0; i<comecar; i++){
+    for(int i=0; i<comecar; i++){ //percorre a lista ate onde é pra começar a inverter
         antecessor=atual;
         atual= atual->prox;
     }
-    ponteiro inicio2 = atual;
+    ponteiro inicio2 = atual; //aponta para o inicio da inversao
     for(int i=0; i<posicao; i++){ //percorre ate a posicao que é pra inverter
         sucessor= atual->prox; //define o sucessor do atual
         atual->prox= antecessor; //atual aponta pro antecessor
         antecessor= atual; //atualiza o antecessor
         atual= sucessor; //atualiza o sucessor
     }
-    if(comecar==0){
+    if(comecar==0){ //reconecta a lista se a inversao comecar no inico
         sequencia->inicio = antecessor;
-    }else{
-        ponteiro invertida = sequencia->inicio;
-        for(int i=0; i<comecar-1; i++){
-            invertida= invertida->prox;
+    }else{ //reconecta a lista para outros casos
+        ponteiro invertida = sequencia->inicio; 
+        for(int i=0; i<comecar-1; i++){ //percorre ate o inicio da inversao
+            invertida= invertida->prox; 
         }
-        invertida->prox = antecessor;
+        invertida->prox = antecessor; //o nó anterior ao comeco da inversao agora aponta para o primeiro elemento invertido
     }
-    inicio2->prox= atual;
+    inicio2->prox= atual; //aponta para o primeiro elemento após inversao
 }
 
 void transpor(lista *sequencia, int inicio, int fim, int posicoes){
@@ -180,7 +180,7 @@ void transpor(lista *sequencia, int inicio, int fim, int posicoes){
         i++;
     }
 
-    if(posicoes<0){ 
+    if(posicoes<0){ //printa para casos positivos
         printf("subsequencia ");
         for(int i=0; i<fim-inicio+1; i++){
             printf("%c ", nucleos[i]);
@@ -188,7 +188,7 @@ void transpor(lista *sequencia, int inicio, int fim, int posicoes){
         printf("<< %d", -posicoes);
     }
 
-    if(posicoes>0){
+    if(posicoes>0){ //printa para casos negativos
         printf("subsequencia ");
         for(int i=0; i<fim-inicio+1; i++){
             printf("%c ", nucleos[i]);
