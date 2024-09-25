@@ -167,20 +167,20 @@ void inverter_sufixo(lista *sequencia, int posicao){
 void transpor(lista *sequencia, int inicio, int fim, int posicoes){
     int i=0;
     int j=0;
-    char nucleos[MAX];
+    char nucleos[MAX]; //cria uma lista para armazenar os nucleos que serao transpostos
     ponteiro atual= sequencia->inicio;
-    while(atual!=NULL && i<inicio){ //guarda numa lista os caracteres a serem transpostos
+    while(atual!=NULL && i<inicio){ //coloca atual na posicao "inicio"
         atual= atual->prox;
         i++;
     }
-    while(atual!=NULL && i<=fim){
+    while(atual!=NULL && i<=fim){ //armazena os nucleos na lista
         nucleos[j]= atual-> nucleo;
         atual = atual->prox;
         j++;
         i++;
     }
 
-    if(posicoes<0){
+    if(posicoes<0){ 
         printf("subsequencia ");
         for(int i=0; i<fim-inicio+1; i++){
             printf("%c ", nucleos[i]);
@@ -196,21 +196,21 @@ void transpor(lista *sequencia, int inicio, int fim, int posicoes){
         printf(">> %d", posicoes);
     }
 
-    for(int k=fim; k>=inicio; k--){
+    for(int k=fim; k>=inicio; k--){ //remove os nós especificados da sequencia
         remover(sequencia, k);
     }
-    int posicao2 = inicio+posicoes;
-    if(posicao2<0){
+    int posicao2 = inicio+posicoes; //posicao a partir da onde os nucleos serao transpostos
+    if(posicao2<0){ //garante que nao seja negativo
         posicao2=0;
     }
     ponteiro auxiliar= sequencia->inicio;
     int m=0;
-    while(auxiliar!=NULL && m<posicao2){
+    while(auxiliar!=NULL && m<posicao2){ //avança até a posicao para comecar a transpor
         auxiliar=auxiliar->prox;
         i++;
     }
     for(int k=0; k<j;k++){
-        inserir(sequencia, nucleos[k], posicao2+k);
+        inserir(sequencia, nucleos[k], posicao2+k); //insere novamente os nucleos na sequencia na posicao correta
     }
 }
 
@@ -249,6 +249,8 @@ int main(void){
             printf("-> ");
             inverter_prefixo(sequencia, prefixo); 
             printar_prefixo(sequencia,prefixo);
+            printf("\n");
+    
         }
         if(strcmp(comando,"inverter-sufixo")==0){
             int sufixo=0;
@@ -258,15 +260,18 @@ int main(void){
             printf("-> ");
             inverter_sufixo(sequencia, sufixo);
             printar_sufixo(sequencia, sufixo); 
+         printf("\n");
         }
         if(strcmp(comando,"transpor")==0){
             int inicio,final,posicoes=0;
             scanf("%d %d %d", &inicio, &final, &posicoes);     
-            transpor(sequencia, inicio, final, posicoes);     
+            transpor(sequencia, inicio, final, posicoes);   
+            printf("\n");  
         }
         if(strcmp(comando,"imprimir")==0){
             printf("sequencia ");
             imprimir(sequencia);
+            printf("\n");
             
         }
     }
