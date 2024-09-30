@@ -21,21 +21,43 @@ void printarmatriz(int matriz[],int linham, int colunam){
         }
     }
 }
+void movercobra(lista*cobrainteira, int linham, int colunam){
+    ponteiro atual = cobrainteira->cabeca;
+    int atualinha=0;
+    int atualcoluna=0;
+    int antigalinha=atual->posicaolinha;
+    int antigacoluna=atual->posicaocoluna;\
+     
+    if(atual->posicaolinha == linham){ //define as condicoes de borda
+        atual->posicaolinha= 0;
+    }
+    if(atual->posicaolinha == 0){
+        atual->posicaolinha= linham;
+    }
+    if(atual->posicaocoluna == colunam){
+        atual->posicaolinha= 0;
+    }
+    if(atual->posicaocoluna == 0){
+        atual->posicaolinha= colunam;
+    }
+    atual=atual->prox;
 
-void cobra_come_fruta(int **matriz[]){
-
-}
-int rabocobra(int **matriz[], lista *cobrainteira){
-    ponteiro atual = cobrainteira -> cabeca;
-    while(atual!=NULL){
+    while(atual!=NULL){ //move todo o corpo de forma que cada nó siga a posicao do nó anterior
+        atualinha= atual->posicaolinha;
+        atualcoluna= atual->posicaocoluna;
+        atual->posicaolinha = antigalinha;
+        atual->posicaocoluna = antigacoluna;
+        antigalinha=atualinha;
+        antigacoluna=atualcoluna;
         atual=atual->prox;
     }
-    int linharabo = atual->posicaolinha;
-    int colunarabo = atual->posicaocoluna;
-    return linharabo, colunarabo;
 }
 
-Bool verifica_ganho(int **matriz[]){ //verifica se a cobra ocupa toda a matriz
+void atualizarmatriz(int **matriz){
+    
+}
+
+Bool youwin(int **matriz[], int linham, int colunam){ //verifica se a cobra ocupa toda a matriz
     for(int i=0; i<linham; i++){
         for(int j=0; j<colunam; j++){
             if(matriz[i][j]!='#'){
@@ -45,7 +67,6 @@ Bool verifica_ganho(int **matriz[]){ //verifica se a cobra ocupa toda a matriz
             }
         }
     }
-
 }
 
 int main(void){
@@ -56,13 +77,13 @@ int main(void){
     int colunam=0;
     char matriz[MAX];
     scanf("%s %d %d", matriz, &linham, &colunam);//aloca e inicializa a matriz
-    double**matriz=(char**)malloc(linham*sizeof(char*));
+    char**matriz=(char**)malloc(linham*sizeof(char*));
     for(int i=0; i<linham; i++){
         matriz[i]=(char*)malloc(colunam*sizeof(char));
     }
     for(int i=0; i<linham; i++){
         for(int j=0; j<colunam; j++){
-            matriz[i][j]='_';
+            matriz[i][j]='_ ';
         }
     }
 
@@ -72,7 +93,7 @@ int main(void){
     scanf("%s %d %d", cobra, &linhacobra, &colunacobra);
     cobrainteira->cabeca->posicaolinha=linhacobra;
     cobrainteira->cabeca->posicaocoluna=colunacobra;
-    matriz[linhacobra][colunacobra]='#';
+    matriz[linhacobra][colunacobra]='# ';
 
     while(1){
         char comando[MAX];
@@ -81,30 +102,31 @@ int main(void){
             int linhafruta=0;
             int colunafruta=0;
             scanf("%d %d",&linhafruta, &colunafruta);
-            matriz[linhafruta][colunafruta]='*';
+            matriz[linhafruta][colunafruta]='* ';
             printarmatriz(matriz, linham, colunam);
         }else if(strcmp(comando,"w")==0){
             cobrainteira->cabeca->posicaocoluna=(colunacobra-1);
-            //atualiza a matriz e move a cobra toda
+            movercobra(cobrainteira);
         }else if(strcmp(comando,"s")==0){
             cobrainteira->cabeca->posicaocoluna=(colunacobra+1);
-            //atualiza a matriz e move a cobra toda
+            movercobra(cobrainteira);
         }else if(strcmp(comando,"a")==0){
             cobrainteira->cabeca->posicaolinha=(linhacobra-1);
-            //atualiza a matriz e move a cobra toda
+            movercobra(cobrainteira);
         }else if(strcmp(comando,"d")==0){
             cobrainteira->cabeca->posicaolinha=(linhacobra-1);
-            //atualiza a matriz e move a cobra toda
+            movercobra(cobrainteira);
         }
         if(cobrainteira->cabeca->posicaocoluna==colunafruta && cobrainteira->cabeca->posicaolinha==linhafruta){
-            //funcao cobra come fruta
+            matriz[linhafruta][colunafruta]=='# ';
         }
+        printmatriz()
         int linharabo, colunarabo=rabocobra(matriz, cobrainteira);
-        if(cobrainteira->cabeca->posicaocoluna==colunarabo && cobrainteira->cabeca->posicaolinha==linharabo){
+        if(matriz[cobrainteira->cabeca->posicaolinha][cobrainteira->cabeca->posicaocoluna]=='_ '){
             printf("YOU LOSE");
             return 0;
         }
-        if(verifica_ganho){
+        if(youwin(matriz,linham,colunam)){
             printf("YOU WIN");
         }
     
