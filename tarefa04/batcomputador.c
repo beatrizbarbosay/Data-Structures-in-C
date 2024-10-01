@@ -57,11 +57,11 @@ void batfree(int **batmemoria, int liberar, int memoriatotal, int *memoriausada)
     for(int i=liberar; i<=liberar+inicio; i++){ //libera todo o resto do vetor
         (*batmemoria)[i]= LIXO;
     }
-    for(int j = memoriatotal; j>8; j--){
-            if((*batmemoria)[j] != LIXO){
-                *memoriausada = j+1;
-                break;
-            }
+    for(int j = memoriatotal-1; j>8; j--){
+        if((*batmemoria)[j] != LIXO){
+            *memoriausada = j+1;
+            break;
+        }
     }
 }
 
