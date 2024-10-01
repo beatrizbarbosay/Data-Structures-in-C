@@ -3,6 +3,7 @@
 #include <string.h>
 #define MAX 50
 #define LIXO 0
+#define MEMORIAINICIAL 8
 
 int duplicar_memoria(int**batmemoria, int memoriatotal){ //aumentar a memória quando necessário
     int novotamanho = (memoriatotal)*2; //pega o valor da memoria total antiga e duplica
@@ -111,7 +112,7 @@ void batuso(int *batmemoria, int memoriatotal, int memoriausada){
 }
 
 int main(void){
-    int memoriatotal=8; //define o valor inicial da bat memoria
+    int memoriatotal=MEMORIAINICIAL; //define o valor inicial da bat memoria
     int memoriausada=0;
     int *batmemoria = malloc(memoriatotal*sizeof(int)); //cria um vetor inicial com o tamanho da bat memoria
     for(int i=0; i<memoriatotal; i++){ //inicializa o vetor
@@ -140,5 +141,6 @@ int main(void){
             batuso(batmemoria, memoriatotal, memoriausada);
         }
     }
+    free(batmemoria);
     return 0;
 }
