@@ -229,8 +229,8 @@ int main(void){
             break;
         }
     }
-    free(cobrainteira);    
     freecobra(cobrainteira);
     freematriz(matriz, linham, colunam);
+    free(cobrainteira);
     return 0;
 }
