@@ -13,21 +13,43 @@ struct cobra { //nós de cada pedaço da cobra
 
 typedef struct lista{ //cabeça da cobra
     ponteiro cabeca;
+    int tamanho;
 } lista;
 
-void adicionarpedaco(lista*cobrainteira, char**matriz, int linhacobra, int colunacobra){
-    ponteiro pedaco = (ponteiro)malloc(sizeof(struct cobra)); //a nova cabeca da cobra vai ter as coordenadas da cabeca anterior
+void adicionarpedaco(lista*cobrainteira, char**matriz, int linhacobra, int colunacobra){ //funcao para inicilizar a cobra no jogo
+    ponteiro pedaco = (ponteiro)malloc(sizeof(struct cobra)); 
     pedaco->posicaolinha= linhacobra;
     pedaco->posicaocoluna= colunacobra;
     pedaco->prox= cobrainteira->cabeca;
     pedaco->anterior = NULL;
-
-    if(cobrainteira->cabeca!=NULL){ //para crescer a cobra
-        cobrainteira->cabeca->anterior = pedaco;
-    }
-    cobrainteira->cabeca = pedaco; //define o nó inicial como cabeça da cobra
-    matriz[linhacobra][colunacobra]='#';
+    cobrainteira->cabeca = pedaco; //define o nó como cabeça da cobra
+    matriz[linhacobra][colunacobra]='#'; //atualiza valor na matriz
 }
+
+void comeufruta(lista*cobrainteira, char**matriz, int linhacobra, int colunacobra){ //adiciona um novo nó no final da cobra, com as coordenadas do nó anterior
+    ponteiro atual= cobrainteira->cabeca;
+
+    while(atual->prox !=NULL){ //encontra o ultimo nó
+        atual= atual->prox;
+    }
+    ponteiro novo = malloc(sizeof(struct cobra)); //adiciona um novo no ultimo
+    if(cobrainteira->cabeca->prox==NULL){ //caso a cobra só tenha 1 pedaço, o novo nó irá para a posicao que a cabeca da cobra estava
+        novo->posicaolinha = linhacobra;
+        novo->posicaocoluna = colunacobra;
+        novo->prox = NULL; 
+        novo->anterior = atual;
+        atual->prox = novo;
+    }else{ //caso contrario, vai para a posicao do rabo da cobra
+        novo->posicaolinha = atual->posicaolinha;
+        novo->posicaocoluna = atual->posicaocoluna;
+        novo->prox = NULL; 
+        novo->anterior = atual;
+        atual->prox = novo;
+    }
+
+    matriz[novo->posicaolinha][novo->posicaocoluna]='#';
+}    
+
 
 
 void printarmatriz(char **matriz,int linham, int colunam){
@@ -38,17 +60,27 @@ void printarmatriz(char **matriz,int linham, int colunam){
         printf("\n");
     }
 }
-void movercobra(lista*cobrainteira, int linham, int colunam){
-    ponteiro atual = cobrainteira->cabeca;
-    while(atual!=NULL){ //move todo o corpo de forma que cada nó siga a posicao do nó anterior
-        atual->posicaolinha= atual->anterior->posicaolinha; 
-        atual->posicaocoluna= atual->anterior->posicaocoluna;
-        atual=atual->prox;
+
+void movercobra(lista*cobrainteira, int linhacobra, int colunacobra){
+    ponteiro atual = cobrainteira->cabeca->prox;
+    int iniciolinha= linhacobra; //guarda a posicao da cabeca da cobra
+    int iniciocoluna=colunacobra;
+    int anteriorlinha=0;
+    int anteriorcoluna=0;
+
+    while(atual!=NULL){ //move a cobra para que cada nó agora aponte para onde estava o nó anterior
+        anteriorlinha = atual->posicaolinha;
+        anteriorcoluna= atual->posicaocoluna;
+        atual->posicaolinha = iniciolinha;
+        atual->posicaocoluna= iniciocoluna;
+        iniciolinha = anteriorlinha;
+        iniciocoluna= anteriorcoluna;
+        atual= atual->prox;
     }
 }
 
 void atualizarmatriz(char **matriz,int linham, int colunam, lista *cobrainteira){ //atualiza a  matriz a cada movimento
-    for(int i=0; i<linham; i++){
+    for(int i=0; i<linham; i++){ //reseta a matriz deixando só onde tem fruta
         for(int j=0; j<colunam; j++){
             if(matriz[i][j] != '*'){
                 matriz[i][j]= '_';
@@ -56,7 +88,7 @@ void atualizarmatriz(char **matriz,int linham, int colunam, lista *cobrainteira)
         }
     }
     ponteiro atual = cobrainteira->cabeca;
-    while(atual!=NULL){
+    while(atual!=NULL){ //coloca a cobra nas novas posicoes na matriz
         matriz[atual->posicaolinha][atual->posicaocoluna]='#';
         atual= atual->prox;
     }
@@ -73,17 +105,21 @@ _Bool youwin(char **matriz, int linham, int colunam){ //verifica se a cobra ocup
     return 1;
 }
 
-void youlose(lista*cobrainteira){ //checa se a posicao da cabeca coincide com a posicao de qualquer outra parte do corpo
+_Bool youlose(lista*cobrainteira){ //checa se a posicao da cabeca coincide com a posicao de qualquer outra parte do corpo
+    if(cobrainteira->cabeca==NULL || cobrainteira->cabeca->prox==NULL){ //para o caso que a cobra só tenha 1 pedaco
+        return 0;
+    }
     ponteiro atual = cobrainteira->cabeca->prox;
     int cabecalinha = cobrainteira->cabeca->posicaolinha;
     int cabecacoluna= cobrainteira->cabeca->posicaocoluna;
 
     while(atual!=NULL){
-        if(atual->posicaolinha == cabecalinha && atual->posicaocoluna == cabecacoluna){
-            printf("YOU LOSE");
+        if(atual->posicaolinha == cabecalinha && atual->posicaocoluna == cabecacoluna){ //se a cabeca bater em alguma parte do corpo
+            return 1;
         }
         atual = atual->prox;
     }
+    return 0;
 }
 
 void limitelinha(lista*cobrainteira, int linham, int colunam){ //funcao caso a cobra ultrasse as bordas da linha
@@ -126,42 +162,58 @@ int main(void){
     scanf("%s %d %d", inicial, &linhacobra, &colunacobra);
     adicionarpedaco(cobrainteira, matriz, linhacobra, colunacobra);
 
-    while(1){
+    int linhafruta=0;
+    int colunafruta=0;
+
+    while(1){ //vai recebendo os comandos
         char comando[MAX];
         scanf("%s", comando);
-        int linhafruta=0;
-        int colunafruta=0;
-        if(strcmp(comando,"FRUTA")==0){
+        if(strcmp(comando,"FRUTA")==0){ //coloca fruta na matriz e printa
             scanf("%d %d",&linhafruta, &colunafruta);
             matriz[linhafruta][colunafruta]='*';
             printarmatriz(matriz, linham, colunam);
             continue;
         }
-        if(strcmp(comando,"w")==0){
+        //realiza cada movimento, guardando as coordenadas da cabeca antiga e vendo, um por um, as condicoes de borda
+        if(strcmp(comando,"w")==0){ 
+            linhacobra = cobrainteira->cabeca->posicaolinha; 
+            colunacobra = cobrainteira->cabeca->posicaocoluna;
             cobrainteira->cabeca->posicaolinha-= 1;
             limitelinha(cobrainteira, linham, colunam);
         }else if(strcmp(comando,"s")==0){
+            linhacobra = cobrainteira->cabeca->posicaolinha;
+            colunacobra = cobrainteira->cabeca->posicaocoluna;
             cobrainteira->cabeca->posicaolinha +=1;
             limitelinha(cobrainteira, linham, colunam);
         }else if(strcmp(comando,"a")==0){
+            linhacobra = cobrainteira->cabeca->posicaolinha;
+            colunacobra = cobrainteira->cabeca->posicaocoluna;
             cobrainteira->cabeca->posicaocoluna -=1;
             limitecoluna(cobrainteira, linham, colunam);
         }else if(strcmp(comando,"d")==0){
+            linhacobra = cobrainteira->cabeca->posicaolinha;
+            colunacobra = cobrainteira->cabeca->posicaocoluna;
             cobrainteira->cabeca->posicaocoluna+=1;
             limitecoluna(cobrainteira, linham, colunam);
         }
-
-        if(cobrainteira->cabeca->posicaocoluna==colunafruta && cobrainteira->cabeca->posicaolinha==linhafruta){
-            matriz[linhafruta][colunafruta]='#';
-            adicionarpedaco(cobrainteira, matriz, linhafruta, colunafruta);
+        if(youlose(cobrainteira)){ //verifica se bateu
+            printf("GAME OVER");
+            return 0;
         }
-        movercobra(cobrainteira, linham, colunam);
+
+        if(cobrainteira->cabeca->posicaocoluna==colunafruta && cobrainteira->cabeca->posicaolinha==linhafruta){ //se a cobra comer a fruta
+            comeufruta(cobrainteira, matriz, linhacobra, colunacobra);
+        }
+        movercobra(cobrainteira, linhacobra, colunacobra);
+
+        //atualiza a matriz e a printa após cada comando
         atualizarmatriz(matriz,linham, colunam, cobrainteira);
         printarmatriz(matriz,linham,colunam);
-        youlose(cobrainteira);
-        if(youwin(matriz,linham,colunam)){
+
+        if(youwin(matriz,linham,colunam)){ //verifica se ganhou
             printf("YOU WIN");
             return 0;
         }
-    }    
+    }
+    free(cobrainteira);    
 }   
