@@ -17,7 +17,7 @@ typedef struct lista{ //cabeça da cobra
 } lista;
 
 void adicionarpedaco(lista*cobrainteira, char**matriz, int linhacobra, int colunacobra){ //funcao para inicilizar a cobra no jogo
-    ponteiro pedaco = (ponteiro)malloc(sizeof(struct cobra)); 
+    ponteiro pedaco = malloc(sizeof(struct cobra)); 
     pedaco->posicaolinha= linhacobra;
     pedaco->posicaocoluna= colunacobra;
     pedaco->prox= cobrainteira->cabeca;
@@ -138,7 +138,21 @@ void limitecoluna(lista*cobrainteira, int linham, int colunam){ //funcao caso a 
     }
 }
 
+void freecobra(lista*cobrainteira){ //funcao para liberar memoria da cobra
+    ponteiro atual = cobrainteira->cabeca;
+    while(atual!= NULL){
+        ponteiro liberar = atual;
+        atual = atual->prox;
+        free(liberar);
+    }
+}
 
+void freematriz(char**matriz, int linham, int colunam){ //libera matriz
+    for(int i=0; i<linham; i++){
+        free(matriz[i]);
+    }
+    free(matriz);
+}
 int main(void){
     lista *cobrainteira= malloc(sizeof(lista)); //inicializa a lista ligada que representará a cobra
     cobrainteira->cabeca=NULL;
@@ -198,7 +212,7 @@ int main(void){
         }
         if(youlose(cobrainteira)){ //verifica se bateu
             printf("GAME OVER");
-            return 0;
+            break;
         }
 
         if(cobrainteira->cabeca->posicaocoluna==colunafruta && cobrainteira->cabeca->posicaolinha==linhafruta){ //se a cobra comer a fruta
@@ -212,8 +226,11 @@ int main(void){
 
         if(youwin(matriz,linham,colunam)){ //verifica se ganhou
             printf("YOU WIN");
-            return 0;
+            break;
         }
     }
     free(cobrainteira);    
-}   
+    freecobra(cobrainteira);
+    freematriz(matriz, linham, colunam);
+    return 0;
+}
