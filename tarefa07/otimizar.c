@@ -81,7 +81,30 @@ void demorgan(ponteiro* expressao){
         }
         free(atual);
         free(morgan);
+    }else if(atual!=NULL && atual->direito!=NULL &&(atual->direito->valor=='&' || atual->direito->valor =='|')){
+        ponteiro morgan = atual->direito;
+        if(anterior!=NULL){
+            anterior-> direito = morgan;
+        }else{
+            *expressao = morgan;
+        }
+        if(morgan->valor == '|'){
+            morgan->valor = '&';
+        }else{
+            morgan->valor = '|';
+        }
+
+        ponteiro antigoesq = morgan->esquerdo;
+        ponteiro antigodir = morgan->direito;
+        ponteiro novoesq = criarno('!'); //faz a "distributiva"da negacao
+        ponteiro novodir = criarno('!');
+        morgan->esquerdo = novoesq;
+        morgan->direito = novodir;
+        novoesq->direito = antigoesq; //reconecta os antigos valores
+        novodir->direito = antigodir;
+        
     }
+
 }
 
 
