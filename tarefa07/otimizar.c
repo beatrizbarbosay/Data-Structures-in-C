@@ -103,6 +103,96 @@ void demorgan(ponteiro* expressao){
         novoesq->direito = antigoesq; //reconecta os antigos valores
         novodir->direito = antigodir;
         
+    }else{
+        return;
+    }
+    demorgan(expressao);
+}
+
+
+
+
+void simplificar(ponteiro* expressao){
+    if(*expressao==NULL){
+        return;
+    }
+    simplificar(&((*expressao)->esquerdo));
+    simplificar(&((*expressao)->direito));
+
+    ponteiro atual= *expressao; 
+    while(atual != NULL && atual->direito != NULL && atual->direito->valor != 'T'){ 
+        atual= atual->direito;
+    }
+    if( atual!=NULL && atual->direito!=NULL && atual->valor== '|'){
+        atual->valor= 'T';
+        atual->direito = NULL;
+        atual->esquerdo = NULL;
+    }else if(atual != NULL && atual->valor == '&' && atual->direito != NULL){
+        ponteiro exp = atual->esquerdo;
+        if(exp!=NULL){
+        atual->valor = exp->valor;
+        atual->direito = exp->direito;
+        atual->esquerdo = exp->esquerdo;
+        }
+    }else if(atual != NULL && atual->valor == '!' && atual->direito != NULL){
+        atual->valor= 'F';
+        atual->direito = NULL;
+        atual->esquerdo = NULL;
+    }
+    atual= *expressao; 
+    while(atual != NULL && atual->esquerdo != NULL && atual->esquerdo->valor != 'T'){ 
+        atual= atual->esquerdo;
+    }
+    if(atual != NULL && atual->valor == '|' && atual->esquerdo != NULL){
+        atual->valor= 'T';
+        atual->direito = NULL;
+        atual->esquerdo = NULL;
+    }else if(atual != NULL && atual->valor == '&' && atual->esquerdo != NULL){
+        ponteiro exp = atual->direito;
+        if(exp!=NULL){
+        atual->valor = exp->valor;
+        atual->direito = exp->direito;
+        atual->esquerdo = exp->esquerdo;
+        }
+    }
+
+
+    atual= *expressao; 
+    while(atual != NULL && atual->direito != NULL && atual->direito->valor != 'F'){ 
+        atual= atual->direito;
+    }
+    if( atual!=NULL && atual->direito!=NULL && atual->valor== '|'){
+        ponteiro exp = atual->esquerdo;
+        if(exp!=NULL){
+            atual->valor = exp->valor;
+            atual->direito = exp->direito;
+            atual->esquerdo = exp->esquerdo;
+        }
+    }else if(atual != NULL && atual->valor == '&' && atual->direito != NULL){
+        atual->valor= 'F';
+        atual->direito = NULL;
+        atual->esquerdo = NULL;
+
+    }else if(atual != NULL && atual->valor == '!' && atual->direito != NULL){
+        atual->valor= 'T';
+        atual->direito = NULL;
+        atual->esquerdo = NULL;
+    }
+    atual= *expressao; 
+    while(atual != NULL && atual->esquerdo != NULL && atual->esquerdo->valor != 'F'){ 
+        atual= atual->esquerdo;
+    }
+    if( atual!=NULL && atual->esquerdo!=NULL && atual->valor== '|'){
+        ponteiro exp = atual->direito;
+        if(exp!=NULL){
+            atual->valor = exp->valor;
+            atual->direito = exp->direito;
+            atual->esquerdo = exp->esquerdo;
+        }
+    }else if(atual != NULL && atual->valor == '&' && atual->esquerdo != NULL){
+        atual->valor= 'F';
+        atual->direito = NULL;
+        atual->esquerdo = NULL;
     }
 
 }
@@ -115,6 +205,9 @@ int main(void){
     printar(arvbin->expressao);
     printf("\n");
     demorgan(&(arvbin-> expressao));
+    printar(arvbin->expressao);
+    printf("\n");
+    simplificar(&(arvbin->expressao));
     printar(arvbin->expressao);
 
 
