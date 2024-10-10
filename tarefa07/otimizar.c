@@ -78,6 +78,8 @@ void demorgan(ponteiro* expressao){ //funcao para manipular a arvore binaria a p
         }else{
             *expressao=valor;
         }
+        free(atual);
+        free(morgan);
     }else if(atual!=NULL && atual->direito!=NULL &&(atual->direito->valor=='&' || atual->direito->valor =='|')){ //condicao para prox regra
         ponteiro morgan = atual->direito;
         if(anterior!=NULL){
@@ -194,6 +196,7 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
             atual->valor = exp->valor;
             atual->direito = exp->direito;
             atual->esquerdo = exp->esquerdo;
+            free(exp);
         }
     }else if(atual != NULL && atual->valor == '&' && atual->esquerdo != NULL){
         atual->valor= 'F';
