@@ -109,7 +109,16 @@ void demorgan(ponteiro* expressao){
     demorgan(expressao);
 }
 
-
+int equivalencia(ponteiro no1, ponteiro no2){
+    if(no1 == NULL && no2==NULL){
+        return 1;
+    }else if(no1==NULL && no2!=NULL){
+        return 0;
+    }else if(no1->valor != no2->valor){
+        return 0;
+    }
+    return (equivalencia(no1->esquerdo, no2-> esquerdo) && equivalencia(no1->direito, no2->direito))||(equivalencia(no1->esquerdo, no2->direito)&&equivalencia(no1->direito, no2->esquerdo));    
+}
 
 
 void simplificar(ponteiro* expressao){
@@ -195,6 +204,12 @@ void simplificar(ponteiro* expressao){
         atual->esquerdo = NULL;
     }
 
+    atual = *expressao;
+    if(atual->esquerdo!=NULL && atual->direito!=NULL &&(atual->valor == '|' || atual->valor == '&')){
+        if(equivalencia(atual->esquerdo, atual-> direito)){
+            *expressao = atual->esquerdo;
+        }
+    }
 }
 
 
