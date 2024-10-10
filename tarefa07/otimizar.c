@@ -57,6 +57,15 @@ ponteiro criararvore(){ //cria a arvore binaria a partir dos scanfs
     }
 }
 
+void liberar(ponteiro expressao) { //funcao recursiva para liberar todos os nos da arvore
+    if (expressao == NULL) {
+        return;
+    }
+    liberar(expressao->esquerdo);
+    liberar(expressao->direito);
+    free(expressao);
+}
+
 void demorgan(ponteiro* expressao){ //funcao para manipular a arvore binaria a partir das regras de deMorgan
     if(*expressao==NULL){
         return;
@@ -95,6 +104,8 @@ void demorgan(ponteiro* expressao){ //funcao para manipular a arvore binaria a p
 
         ponteiro antigoesq = morgan->esquerdo;
         ponteiro antigodir = morgan->direito;
+
+        free(atual);
         ponteiro novoesq = criarno('!'); //faz a "distributiva"da negacao
         ponteiro novodir = criarno('!');
         morgan->esquerdo = novoesq;
@@ -133,6 +144,8 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
     }
     if( atual!=NULL && atual->direito!=NULL && atual->valor== '|'){ //caso o que venha antes seja |
         atual->valor= 'T'; //simplifica para T
+        liberar(atual->direito);
+        liberar(atual->esquerdo);
         atual->direito = NULL;
         atual->esquerdo = NULL;
     }else if(atual != NULL && atual->valor == '&' && atual->direito != NULL){ //caso seja &
@@ -141,9 +154,12 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
         atual->valor = exp->valor;
         atual->direito = exp->direito;
         atual->esquerdo = exp->esquerdo;
+        free(exp);
         }
     }else if(atual != NULL && atual->valor == '!' && atual->direito != NULL){ //caso o que venha antes seja negacao
         atual->valor= 'F'; //muda para F
+        liberar(atual->direito);
+        liberar(atual->esquerdo);
         atual->direito = NULL;
         atual->esquerdo = NULL;
     }
@@ -175,6 +191,7 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
             atual->valor = exp->valor;
             atual->direito = exp->direito;
             atual->esquerdo = exp->esquerdo;
+            free(exp);
         }
     }else if(atual != NULL && atual->valor == '&' && atual->direito != NULL){
         atual->valor= 'F';
@@ -200,6 +217,8 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
         }
     }else if(atual != NULL && atual->valor == '&' && atual->esquerdo != NULL){
         atual->valor= 'F';
+        free(atual->esquerdo);
+        free(atual->direito);
         atual->direito = NULL;
         atual->esquerdo = NULL;
     }
@@ -207,19 +226,12 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
     atual = *expressao;
     if(atual->esquerdo!=NULL && atual->direito!=NULL &&(atual->valor == '|' || atual->valor == '&')){ //testa as equivalencias
         if(equivalencia(atual->esquerdo, atual-> direito)){
+            liberar(atual->direito);
             *expressao = atual->esquerdo; //deixa apenas com a expressao do lado esquerdo
         }
     }
 }
 
-void liberar(ponteiro expressao) { //funcao recursiva para liberar todos os nos da arvore
-    if (expressao == NULL) {
-        return;
-    }
-    liberar(expressao->esquerdo);
-    liberar(expressao->direito);
-    free(expressao);
-}
 
 
 int main(void){
