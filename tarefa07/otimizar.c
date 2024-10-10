@@ -151,6 +151,7 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
     }else if(atual != NULL && atual->valor == '&' && atual->direito != NULL){ //caso seja &
         ponteiro exp = atual->esquerdo; //simplifica para expressao ao lado de T
         if(exp!=NULL){
+        liberar(atual->direito);
         atual->valor = exp->valor;
         atual->direito = exp->direito;
         atual->esquerdo = exp->esquerdo;
@@ -169,14 +170,18 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
     }
     if(atual != NULL && atual->valor == '|' && atual->esquerdo != NULL){
         atual->valor= 'T';
+        liberar(atual->direito);
+        liberar(atual->esquerdo);
         atual->direito = NULL;
         atual->esquerdo = NULL;
     }else if(atual != NULL && atual->valor == '&' && atual->esquerdo != NULL){
         ponteiro exp = atual->direito;
         if(exp!=NULL){
+        liberar(atual->esquerdo);
         atual->valor = exp->valor;
         atual->direito = exp->direito;
         atual->esquerdo = exp->esquerdo;
+        free(exp);
         }
     }
 
@@ -188,6 +193,7 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
     if( atual!=NULL && atual->direito!=NULL && atual->valor== '|'){
         ponteiro exp = atual->esquerdo;
         if(exp!=NULL){
+            liberar(atual->direito);
             atual->valor = exp->valor;
             atual->direito = exp->direito;
             atual->esquerdo = exp->esquerdo;
@@ -195,11 +201,15 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
         }
     }else if(atual != NULL && atual->valor == '&' && atual->direito != NULL){
         atual->valor= 'F';
+        liberar(atual->direito);
+        liberar(atual->esquerdo);
         atual->direito = NULL;
         atual->esquerdo = NULL;
 
     }else if(atual != NULL && atual->valor == '!' && atual->direito != NULL){
         atual->valor= 'T';
+        liberar(atual->direito);
+        liberar(atual->esquerdo);
         atual->direito = NULL;
         atual->esquerdo = NULL;
     }
@@ -210,6 +220,7 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
     if( atual!=NULL && atual->esquerdo!=NULL && atual->valor== '|'){
         ponteiro exp = atual->direito;
         if(exp!=NULL){
+            liberar(atual->esquerdo);
             atual->valor = exp->valor;
             atual->direito = exp->direito;
             atual->esquerdo = exp->esquerdo;
@@ -217,8 +228,8 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
         }
     }else if(atual != NULL && atual->valor == '&' && atual->esquerdo != NULL){
         atual->valor= 'F';
-        free(atual->esquerdo);
-        free(atual->direito);
+        liberar(atual->esquerdo);
+        liberar(atual->direito);
         atual->direito = NULL;
         atual->esquerdo = NULL;
     }
@@ -228,6 +239,7 @@ void simplificar(ponteiro* expressao){ //faz as regras de simplificaçao
         if(equivalencia(atual->esquerdo, atual-> direito)){
             liberar(atual->direito);
             *expressao = atual->esquerdo; //deixa apenas com a expressao do lado esquerdo
+            free(atual);
         }
     }
 }
