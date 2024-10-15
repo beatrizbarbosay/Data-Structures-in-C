@@ -44,18 +44,12 @@ ponteiro criarno_folha(char nome[MAX], int x, int y){
     return novo;
 }
 
-ponteiro criarno_vazia(){
-    ponteiro novo = malloc(sizeof(struct arvore));
-    novo->tipo = FolhaVazia;
-    return novo;
-}
-
 void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
     if(mapatotal==NULL){
         printf("Nenhuma cidade encontrada no ponto (%d,%d).\n", x, y);
         return;
     }
-    if(mapatotal->tipo == FolhaOcupada){
+    if(mapatotal->tipo == FolhaOcupada){ //se for uma folha ocupada, verifica as coordenadas
         if(mapatotal->memoria.folha.x == x && mapatotal->memoria.folha.y==y){
             printf("Cidade %s encontrada no ponto (%d,%d).\n", mapatotal->memoria.folha.nome, x, y);
         }else{
@@ -64,7 +58,7 @@ void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
         return;
     }
 
-    int tamanho = w/2;
+    int tamanho = w/2; //procura o x e y nos quadrantes que eles estao inseridos
     if (x < centrox && y < centroy) {
         buscar(mapatotal->memoria.interno.sudoeste, x, y, tamanho, centrox-tamanho/2, centroy-tamanho/2);
     } else if (x < centrox && y >= centroy) { 
@@ -83,28 +77,28 @@ void inserir(ponteiro *mapatotal, int x, int y, char nome[MAX],int w, int centro
     }
 
     if((*mapatotal)->tipo== FolhaOcupada){ //condicao folha ocupada
-        ponteiro antigafolha = *mapatotal;
+        ponteiro antigafolha = *mapatotal; //salva as informaçoes da antiga cidade
         int xa= antigafolha->memoria.folha.x;
         int ya= antigafolha->memoria.folha.y;
         char nomea[MAX];
         strcpy(nomea,antigafolha->memoria.folha.nome);
 
-        *mapatotal = criarno_interno();
+        *mapatotal = criarno_interno(); //cria um nó interno para separar em quadrantes
 
-        inserir(mapatotal, xa, ya, nomea, w, centrox, centroy);
-        inserir(mapatotal, x, y, nome, w, centrox, centroy);
+        inserir(mapatotal, xa, ya, nomea, w, centrox, centroy); //coloca a antiga cidade no seu quadrante
+        inserir(mapatotal, x, y, nome, w, centrox, centroy); //coloca a cidade nova no quadrante
         return;
     }
 
     int tamanho = w/2;
-
-    if (x < centrox && y < centroy) { // Sudoeste
+    //para o caso de nao ser uma folha ocupada, insere a cidade em seus respectivos quadrantes
+    if (x < centrox && y < centroy) { 
         inserir(&(*mapatotal)->memoria.interno.sudoeste, x, y, nome, tamanho, centrox-tamanho/2, centroy-tamanho/2);
-    } else if (x < centrox && y >= centroy) { // Noroeste
+    } else if (x < centrox && y >= centroy) { 
         inserir(&(*mapatotal)->memoria.interno.noroeste, x, y, nome, tamanho, centrox-tamanho/2, centroy+tamanho/2);
-    } else if (x >= centrox && y < centroy) { // Sudeste
+    } else if (x >= centrox && y < centroy) {
         inserir(&(*mapatotal)->memoria.interno.sudeste, x, y, nome, tamanho, centrox+tamanho/2, centroy-tamanho/2);
-    } else { // Nordeste
+    } else { 
         inserir(&(*mapatotal)->memoria.interno.nordeste, x, y, nome, tamanho, centrox+tamanho/2, centroy+tamanho/2);
     }
 }
@@ -113,16 +107,16 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
     if(*mapatotal==NULL){
         return;
     }
-    if((*mapatotal)->tipo == FolhaOcupada){
-        if((*mapatotal)->memoria.folha.x==x && (*mapatotal)->memoria.folha.y==y){
+    if((*mapatotal)->tipo == FolhaOcupada){  
+        if((*mapatotal)->memoria.folha.x==x && (*mapatotal)->memoria.folha.y==y){ //caso encontre uma cidade com as coordenadas a serem removidas
             printf("Cidade %s removida do ponto (%d,%d).\n", (*mapatotal)->memoria.folha.nome, x,y);
             free(*mapatotal);
-            *mapatotal=NULL;
+            *mapatotal=NULL; //remove
             return;
         }
     }
     int tamanho = w / 2;
-
+    //procura a coordenada a ser removida a partir do quadrante em que ela esta e chama recursivamente
     if (x < centrox && y < centroy) {
         remover(&(*mapatotal)->memoria.interno.sudoeste, x, y, tamanho, centrox - tamanho / 2, centroy - tamanho / 2);
     } else if (x < centrox && y >= centroy) { 
@@ -132,32 +126,8 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
     } else { 
         remover(&(*mapatotal)->memoria.interno.nordeste, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
     }
-
-    if((*mapatotal)->tipo == Interno){
-        int cidades =0;
-        ponteiro antigafolha = NULL;
-        if((*mapatotal)->memoria.interno.noroeste!=NULL && (*mapatotal)->memoria.interno.noroeste->tipo== FolhaOcupada){
-            cidades++;
-            antigafolha = (*mapatotal)->memoria.interno.noroeste;
-        }
-        if((*mapatotal)->memoria.interno.nordeste!=NULL && (*mapatotal)->memoria.interno.nordeste->tipo== FolhaOcupada){
-            cidades++;
-            antigafolha = (*mapatotal)->memoria.interno.nordeste;
-        }
-        if((*mapatotal)->memoria.interno.sudeste!=NULL && (*mapatotal)->memoria.interno.sudeste->tipo== FolhaOcupada){
-            cidades++;
-            antigafolha = (*mapatotal)->memoria.interno.sudeste;
-        }
-        if((*mapatotal)->memoria.interno.sudoeste!=NULL && (*mapatotal)->memoria.interno.sudoeste->tipo== FolhaOcupada){
-            cidades++;
-            antigafolha = (*mapatotal)->memoria.interno.sudoeste;
-        }
-        if(cidades==1){
-            ponteiro novafolha= criarno_folha(antigafolha->memoria.folha.nome, antigafolha->memoria.folha.x, antigafolha->memoria.folha.y);
-            free(*mapatotal);
-            *mapatotal = novafolha;
-        }
-    }
+    //falta implementar a condicao para transformar um nó interno em um nó folha caso só tenha um filho
+    
 }
 
 void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
@@ -168,14 +138,14 @@ void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centr
     if(mapatotal->tipo == FolhaOcupada){
         int distanciax = (mapatotal->memoria.folha.x) - x;
         int distanciay = (mapatotal->memoria.folha.y) - y;
-        double distancia = sqrt((distanciax * distanciax) + (distanciay * distanciay));
+        double distancia = sqrt((distanciax * distanciax) + (distanciay * distanciay)); //para calcular a distancia dos pontos a partir do raio de um circulo
 
-        if(distancia <= r){
+        if(distancia <= r){ //se estiver dentro do raio, printa o nome da cidade
             printf("%s ", mapatotal->memoria.folha.nome);
         }
     }
 
-    int tamanho = w / 2;
+    int tamanho = w / 2; //chama recursivamente a partir dos quadrantes de interesse
     if (mapatotal->tipo == Interno && x - r <= centrox + tamanho && x + r >= centrox - tamanho && y - r <= centroy + tamanho && y + r >= centroy - tamanho) {
         raio(mapatotal->memoria.interno.noroeste, r, x, y, tamanho, centrox - tamanho / 2, centroy + tamanho / 2);
         raio(mapatotal->memoria.interno.nordeste, r, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
@@ -205,7 +175,7 @@ int main(void){
     ponteiro mapatotal = criarno_interno();
     int w=0;
     scanf("%d", &w);
-    int centrox= w/2;
+    int centrox= w/2; //para usar no calculo das coordenadas dos quadrantes
     int centroy= w/2;
     while(1){
         char comando;
@@ -231,7 +201,6 @@ int main(void){
         }else if(comando == 'o'){
             int r, xo, yo;
             scanf("%d %d %d", &xo, &yo, &r);
-            //funcao buscar
             printf("Cidades a distancia %d de (%d,%d): ", r, xo, yo);
             raio(mapatotal,r,xo,yo,w,centrox,centroy);
             printf("\n");
