@@ -160,28 +160,32 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
     }
 }
 
+#include <math.h>
+
 void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
-    if(mapatotal==NULL){
+    if(mapatotal == NULL){
         return;
     }
-    int xmin= x-r;
-    int xmax = x+r;
-    int ymin = y-r;
-    int ymax= y+r;
 
     if(mapatotal->tipo == FolhaOcupada){
-        if(mapatotal->memoria.folha.x>xmin && mapatotal->memoria.folha.x<xmax && mapatotal->memoria.folha.y>ymin && mapatotal->memoria.folha.y<ymax){
+        int distanciax = (mapatotal->memoria.folha.x) - x;
+        int distanciay = (mapatotal->memoria.folha.y) - y;
+        double distancia = sqrt((distanciax * distanciax) + (distanciay * distanciay));
+
+        if(distancia <= r){
             printf("%s ", mapatotal->memoria.folha.nome);
         }
     }
+
     int tamanho = w / 2;
-    if (mapatotal->tipo == Interno && xmin <= centrox + tamanho && xmax >= centrox - tamanho && ymin <= centroy + tamanho && ymax >= centroy - tamanho) {
+    if (mapatotal->tipo == Interno && x - r <= centrox + tamanho && x + r >= centrox - tamanho && y - r <= centroy + tamanho && y + r >= centroy - tamanho) {
         raio(mapatotal->memoria.interno.noroeste, r, x, y, tamanho, centrox - tamanho / 2, centroy + tamanho / 2);
         raio(mapatotal->memoria.interno.nordeste, r, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
         raio(mapatotal->memoria.interno.sudoeste, r, x, y, tamanho, centrox - tamanho / 2, centroy - tamanho / 2);
         raio(mapatotal->memoria.interno.sudeste, r, x, y, tamanho, centrox + tamanho / 2, centroy - tamanho / 2);
     }
 }
+
 
 void imprimir_arvore(ponteiro no, int nivel) {
     if (no == NULL) {
