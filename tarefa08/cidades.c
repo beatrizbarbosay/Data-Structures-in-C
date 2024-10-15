@@ -172,7 +172,7 @@ void liberar_memoria(ponteiro *mapatotal) {
 
 
 int main(void){
-    ponteiro mapatotal = criarno_interno();
+    ponteiro mapatotal = NULL;
     int w=0;
     scanf("%d", &w);
     int centrox= w/2; //para usar no calculo das coordenadas dos quadrantes
