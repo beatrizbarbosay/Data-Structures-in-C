@@ -3,7 +3,7 @@
 #include <string.h>
 #define MAX 50
 
-typedef enum {Interno, FolhaVazia, FolhaOcupada} TipoNo;
+typedef enum {Interno, FolhaVazia, FolhaOcupada} TipoNo; //3 tipos diferentes de nós
 
 typedef struct arvore *ponteiro;
 
@@ -49,9 +49,32 @@ ponteiro criarno_vazia(){
     return novo;
 }
 
-void buscar(ponteiro *mapatotal){
+void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
+    if(mapatotal==NULL){
+        printf("Cidade não encontrado.\n");
+        return;
+    }
+    if(mapatotal->tipo == FolhaOcupada){
+        if(mapatotal->memoria.folha.x == x && mapatotal->memoria.folha.y==y){
+            printf("Cidade %s encontrado no ponto (%d, %d).\n", mapatotal->memoria.folha.nome, x, y);
+        }else{
+            printf("Cidade não encontrada.\n");
+        }
+        return;
+    }
 
+    int tamanho = w/2;
+    if (x < centrox && y < centroy) {
+        buscar(mapatotal->memoria.interno.sudoeste, x, y, tamanho, centrox-tamanho/2, centroy-tamanho/2);
+    } else if (x < centrox && y >= centroy) { // Noroeste
+        buscar(mapatotal->memoria.interno.noroeste, x, y, tamanho, centrox-tamanho/2, centroy+tamanho/2);
+    } else if (x >= centrox && y < centroy) { // Sudeste
+        buscar(mapatotal->memoria.interno.sudeste, x, y, tamanho, centrox+tamanho/2, centroy-tamanho/2);
+    } else { // Nordeste
+        buscar(mapatotal->memoria.interno.nordeste, x, y, tamanho, centrox+tamanho/2, centroy+tamanho/2);
+    }
 }
+
 void inserir(ponteiro *mapatotal, int x, int y, char nome[MAX],int w, int centrox, int centroy){
     if(*mapatotal== NULL){ //cria o primeiro nó folha
         *mapatotal = criarno_folha(nome,x,y);
@@ -121,10 +144,11 @@ int main(void){
             char nome[MAX];
             scanf("%d %d %s", &x, &y, nome);
             inserir(&mapatotal, x, y, nome, w, centrox, centroy);
+            printf("Cidade %s inserida no ponto (%d,%d).\n", nome, x, y);
         }else if(comando=='b'){
             int xb, yb;
             scanf("%d %d", &xb, &yb);
-            //funcao buscar
+            buscar(mapatotal, xb, yb,w, centrox, centroy);
         }else if(comando == 'r'){
             int xr, yr;
             scanf("%d %d", &xr, &yr);
