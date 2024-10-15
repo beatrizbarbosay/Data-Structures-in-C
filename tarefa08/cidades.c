@@ -127,7 +127,6 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
         remover(&(*mapatotal)->memoria.interno.nordeste, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
     }
     //falta implementar a condicao para transformar um nó interno em um nó folha caso só tenha um filho
-    
 }
 
 void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
@@ -168,6 +167,7 @@ void liberar_memoria(ponteiro *mapatotal) {
     }
 
     free(*mapatotal);
+    *mapatotal= NULL;
 }
 
 
