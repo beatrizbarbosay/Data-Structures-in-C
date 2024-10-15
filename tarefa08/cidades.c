@@ -51,14 +51,14 @@ ponteiro criarno_vazia(){
 
 void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
     if(mapatotal==NULL){
-        printf("Cidade não encontrado.\n");
+        printf("Nenhuma cidade encontrada no ponto (%d,%d).\n", x, y);
         return;
     }
     if(mapatotal->tipo == FolhaOcupada){
         if(mapatotal->memoria.folha.x == x && mapatotal->memoria.folha.y==y){
-            printf("Cidade %s encontrado no ponto (%d, %d).\n", mapatotal->memoria.folha.nome, x, y);
+            printf("Cidade %s encontrada no ponto (%d,%d).\n", mapatotal->memoria.folha.nome, x, y);
         }else{
-            printf("Cidade não encontrada.\n");
+            printf("Nenhuma cidade encontrada no ponto (%d,%d).\n", x, y);
         }
         return;
     }
@@ -66,9 +66,9 @@ void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
     int tamanho = w/2;
     if (x < centrox && y < centroy) {
         buscar(mapatotal->memoria.interno.sudoeste, x, y, tamanho, centrox-tamanho/2, centroy-tamanho/2);
-    } else if (x < centrox && y >= centroy) { // Noroeste
+    } else if (x < centrox && y >= centroy) { 
         buscar(mapatotal->memoria.interno.noroeste, x, y, tamanho, centrox-tamanho/2, centroy+tamanho/2);
-    } else if (x >= centrox && y < centroy) { // Sudeste
+    } else if (x >= centrox && y < centroy) { 
         buscar(mapatotal->memoria.interno.sudeste, x, y, tamanho, centrox+tamanho/2, centroy-tamanho/2);
     } else { // Nordeste
         buscar(mapatotal->memoria.interno.nordeste, x, y, tamanho, centrox+tamanho/2, centroy+tamanho/2);
@@ -108,6 +108,80 @@ void inserir(ponteiro *mapatotal, int x, int y, char nome[MAX],int w, int centro
     }
 }
 
+void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy){
+    if(*mapatotal==NULL){
+        return;
+    }
+    if((*mapatotal)->tipo == FolhaOcupada){
+        if((*mapatotal)->memoria.folha.x==x && (*mapatotal)->memoria.folha.y==y){
+            printf("Cidade %s removida do ponto (%d,%d).\n", (*mapatotal)->memoria.folha.nome, x,y);
+            free(*mapatotal);
+            *mapatotal=NULL;
+            return;
+        }
+    }
+    int tamanho = w / 2;
+
+    if (x < centrox && y < centroy) {
+        remover(&(*mapatotal)->memoria.interno.sudoeste, x, y, tamanho, centrox - tamanho / 2, centroy - tamanho / 2);
+    } else if (x < centrox && y >= centroy) { 
+        remover(&(*mapatotal)->memoria.interno.noroeste, x, y, tamanho, centrox - tamanho / 2, centroy + tamanho / 2);
+    } else if (x >= centrox && y < centroy) { 
+        remover(&(*mapatotal)->memoria.interno.sudeste, x, y, tamanho, centrox + tamanho / 2, centroy - tamanho / 2);
+    } else { 
+        remover(&(*mapatotal)->memoria.interno.nordeste, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
+    }
+
+    if((*mapatotal)->tipo == Interno){
+        int cidades =0;
+        ponteiro antigafolha = NULL;
+        if((*mapatotal)->memoria.interno.noroeste!=NULL && (*mapatotal)->memoria.interno.noroeste->tipo== FolhaOcupada){
+            cidades++;
+            antigafolha = (*mapatotal)->memoria.interno.noroeste;
+        }
+        if((*mapatotal)->memoria.interno.nordeste!=NULL && (*mapatotal)->memoria.interno.nordeste->tipo== FolhaOcupada){
+            cidades++;
+            antigafolha = (*mapatotal)->memoria.interno.nordeste;
+        }
+        if((*mapatotal)->memoria.interno.sudeste!=NULL && (*mapatotal)->memoria.interno.sudeste->tipo== FolhaOcupada){
+            cidades++;
+            antigafolha = (*mapatotal)->memoria.interno.sudeste;
+        }
+        if((*mapatotal)->memoria.interno.sudoeste!=NULL && (*mapatotal)->memoria.interno.sudoeste->tipo== FolhaOcupada){
+            cidades++;
+            antigafolha = (*mapatotal)->memoria.interno.sudoeste;
+        }
+
+        if(cidades==1){
+            ponteiro novafolha= criarno_folha(antigafolha->memoria.folha.nome, antigafolha->memoria.folha.x, antigafolha->memoria.folha.y);
+            free(*mapatotal);
+            *mapatotal = novafolha;
+        }
+    }
+}
+
+void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
+    if(mapatotal==NULL){
+        return;
+    }
+    int xmin= x-r;
+    int xmax = x+r;
+    int ymin = y-r;
+    int ymax= y+r;
+
+    if(mapatotal->tipo == FolhaOcupada){
+        if(mapatotal->memoria.folha.x>xmin && mapatotal->memoria.folha.x<xmax && mapatotal->memoria.folha.y>ymin && mapatotal->memoria.folha.y<ymax){
+            printf("%s ", mapatotal->memoria.folha.nome);
+        }
+    }
+    int tamanho = w / 2;
+    if (mapatotal->tipo == Interno && xmin <= centrox + tamanho && xmax >= centrox - tamanho && ymin <= centroy + tamanho && ymax >= centroy - tamanho) {
+        raio(mapatotal->memoria.interno.noroeste, r, x, y, tamanho, centrox - tamanho / 2, centroy + tamanho / 2);
+        raio(mapatotal->memoria.interno.nordeste, r, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
+        raio(mapatotal->memoria.interno.sudoeste, r, x, y, tamanho, centrox - tamanho / 2, centroy - tamanho / 2);
+        raio(mapatotal->memoria.interno.sudeste, r, x, y, tamanho, centrox + tamanho / 2, centroy - tamanho / 2);
+    }
+}
 
 void imprimir_arvore(ponteiro no, int nivel) {
     if (no == NULL) {
@@ -152,12 +226,16 @@ int main(void){
         }else if(comando == 'r'){
             int xr, yr;
             scanf("%d %d", &xr, &yr);
-            //funcao remover
+            remover(&mapatotal, xr, yr, w, centrox, centroy);
         }else if(comando == 'o'){
             int r, xo, yo;
-            scanf("%d %d %d", &r, &xo, &yo);
+            scanf("%d %d %d", &xo, &yo, &r);
             //funcao buscar
+            printf("Cidades a distancia %d de (%d,%d): ", r, xo, yo);
+            raio(mapatotal,r,xo,yo,w,centrox,centroy);
+            printf("\n");
         }
+
         else if(comando == 'p'){
             imprimir_arvore(mapatotal, 0);
 
