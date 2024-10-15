@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #define MAX 50
 
 typedef enum {Interno, FolhaVazia, FolhaOcupada} TipoNo; //3 tipos diferentes de nós
@@ -151,7 +152,6 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
             cidades++;
             antigafolha = (*mapatotal)->memoria.interno.sudoeste;
         }
-
         if(cidades==1){
             ponteiro novafolha= criarno_folha(antigafolha->memoria.folha.nome, antigafolha->memoria.folha.x, antigafolha->memoria.folha.y);
             free(*mapatotal);
@@ -159,8 +159,6 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
         }
     }
 }
-
-#include <math.h>
 
 void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
     if(mapatotal == NULL){
@@ -187,21 +185,19 @@ void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centr
 }
 
 
-void imprimir_arvore(ponteiro no, int nivel) {
-    if (no == NULL) {
-        printf("%*sV\n", nivel * 4, ""); // Imprime V para nó vazio
+void liberar_memoria(ponteiro *mapatotal) {
+    if (*mapatotal == NULL) {
         return;
     }
-    
-    if (no->tipo == Interno) {
-        printf("%*sI\n", nivel * 4, ""); // Imprime I para nó interno
-        imprimir_arvore(no->memoria.interno.noroeste, nivel + 1);
-        imprimir_arvore(no->memoria.interno.nordeste, nivel + 1);
-        imprimir_arvore(no->memoria.interno.sudoeste, nivel + 1);
-        imprimir_arvore(no->memoria.interno.sudeste, nivel + 1);
-    } else if (no->tipo == FolhaOcupada) {
-        printf("%*sCidade %s (%d, %d)\n", nivel * 4, "", no->memoria.folha.nome, no->memoria.folha.x, no->memoria.folha.y);
+
+    if ((*mapatotal)->tipo == Interno) {
+        liberar_memoria(&(*mapatotal)->memoria.interno.noroeste);
+        liberar_memoria(&(*mapatotal)->memoria.interno.nordeste);
+        liberar_memoria(&(*mapatotal)->memoria.interno.sudoeste);
+        liberar_memoria(&(*mapatotal)->memoria.interno.sudeste);
     }
+
+    free(*mapatotal);
 }
 
 
@@ -216,6 +212,7 @@ int main(void){
         scanf("%c", &comando);
         if(comando == 's'){
             printf("Sistema encerrado.");
+            liberar_memoria(&mapatotal);
             return 0;
         }else if(comando == 'i'){
             int x, y;
@@ -238,11 +235,6 @@ int main(void){
             printf("Cidades a distancia %d de (%d,%d): ", r, xo, yo);
             raio(mapatotal,r,xo,yo,w,centrox,centroy);
             printf("\n");
-        }
-
-        else if(comando == 'p'){
-            imprimir_arvore(mapatotal, 0);
-
         }
     }
 }
