@@ -27,7 +27,7 @@ struct arvore {
 
 ponteiro criarno_interno() { 
     ponteiro novo =  malloc(sizeof(struct arvore));
-    novo->tipo = Interno;
+    novo->tipo = Interno; //define o tipo
     novo->memoria.interno.noroeste = NULL;
     novo->memoria.interno.nordeste = NULL;
     novo->memoria.interno.sudoeste = NULL;
@@ -37,7 +37,7 @@ ponteiro criarno_interno() {
 
 ponteiro criarno_folha(char nome[MAX], int x, int y){
     ponteiro novo = malloc(sizeof(struct arvore));
-    novo->tipo = FolhaOcupada;
+    novo->tipo = FolhaOcupada; //define o tipo
     strcpy(novo->memoria.folha.nome,nome);
     novo->memoria.folha.x = x;
     novo->memoria.folha.y = y;
@@ -45,11 +45,11 @@ ponteiro criarno_folha(char nome[MAX], int x, int y){
 }
 
 void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
-    if(mapatotal==NULL){
+    if(mapatotal==NULL){ //se percorrer toda a arvore e nao encontrar
         printf("Nenhuma cidade encontrada no ponto (%d,%d).\n", x, y);
         return;
     }
-    if(mapatotal->tipo == FolhaOcupada){ //se for uma folha ocupada, verifica as coordenadas
+    if(mapatotal->tipo == FolhaOcupada){ //se for uma folha ocupada, verifica se as coordenadas sao iguais
         if(mapatotal->memoria.folha.x == x && mapatotal->memoria.folha.y==y){
             printf("Cidade %s encontrada no ponto (%d,%d).\n", mapatotal->memoria.folha.nome, x, y);
         }else{
@@ -58,9 +58,9 @@ void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
         return;
     }
 
-    int tamanho = w/2; //procura o x e y nos quadrantes que eles estao inseridos
+    int tamanho = w/2; //procura o x e y nos quadrantes que eles estao inseridos e faz a busca dos pontos recursivamente
     if (x < centrox && y < centroy) {
-        buscar(mapatotal->memoria.interno.sudoeste, x, y, tamanho, centrox-tamanho/2, centroy-tamanho/2);
+        buscar(mapatotal->memoria.interno.sudoeste, x, y, tamanho, centrox-tamanho/2, centroy-tamanho/2); //atualiza para cada vez que divide o quadrante, os valores dos centros
     } else if (x < centrox && y >= centroy) { 
         buscar(mapatotal->memoria.interno.noroeste, x, y, tamanho, centrox-tamanho/2, centroy+tamanho/2);
     } else if (x >= centrox && y < centroy) { 
@@ -86,6 +86,7 @@ void inserir(ponteiro *mapatotal, int x, int y, char nome[MAX],int w, int centro
         *mapatotal = criarno_interno(); //cria um nó interno para separar em quadrantes
 
         inserir(mapatotal, xa, ya, nomea, w, centrox, centroy); //coloca a antiga cidade no seu quadrante
+        free(antigafolha);
         inserir(mapatotal, x, y, nome, w, centrox, centroy); //coloca a cidade nova no quadrante
         return;
     }
@@ -130,11 +131,11 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
 }
 
 void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
-    if(mapatotal == NULL){
+    if(mapatotal == NULL){ //parada da recursao
         return;
     }
 
-    if(mapatotal->tipo == FolhaOcupada){
+    if(mapatotal->tipo == FolhaOcupada){ //compara as coordenadas das folhas ocupadas com o raio
         int distanciax = (mapatotal->memoria.folha.x) - x;
         int distanciay = (mapatotal->memoria.folha.y) - y;
         double distancia = sqrt((distanciax * distanciax) + (distanciay * distanciay)); //para calcular a distancia dos pontos a partir do raio de um circulo
