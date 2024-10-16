@@ -8,7 +8,7 @@ typedef enum {Interno, FolhaVazia, FolhaOcupada} TipoNo; //3 tipos diferentes de
 
 typedef struct arvore *ponteiro;
 
-struct arvore { 
+struct arvore {  
     TipoNo tipo;
     union{
         struct{
@@ -25,7 +25,7 @@ struct arvore {
     }memoria;
 };
 
-ponteiro criarno_interno() { 
+ponteiro criarno_interno() {  
     ponteiro novo =  malloc(sizeof(struct arvore));
     novo->tipo = Interno; //define o tipo
     novo->memoria.interno.noroeste = NULL;
@@ -65,7 +65,7 @@ void buscar(ponteiro mapatotal, int x, int y, int w, int centrox, int centroy){
         buscar(mapatotal->memoria.interno.noroeste, x, y, tamanho, centrox-tamanho/2, centroy+tamanho/2);
     } else if (x >= centrox && y < centroy) { 
         buscar(mapatotal->memoria.interno.sudeste, x, y, tamanho, centrox+tamanho/2, centroy-tamanho/2);
-    } else { // Nordeste
+    } else { 
         buscar(mapatotal->memoria.interno.nordeste, x, y, tamanho, centrox+tamanho/2, centroy+tamanho/2);
     }
 }
@@ -127,7 +127,6 @@ void remover(ponteiro *mapatotal, int x, int y, int w, int centrox, int centroy)
     } else { 
         remover(&(*mapatotal)->memoria.interno.nordeste, x, y, tamanho, centrox + tamanho / 2, centroy + tamanho / 2);
     }
-    //falta implementar a condicao para transformar um nó interno em um nó folha caso só tenha um filho
 }
 
 void raio(ponteiro mapatotal, int r, int x, int y, int w, int centrox, int centroy){
