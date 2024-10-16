@@ -5,8 +5,14 @@ LDFLAGS = -lm
 
 all: cobra
 
-cobra: cobra.c
-	gcc $(CFLAGS) cobra.c -o cobra $(LDFLAGS)
+cobra: cobra.o funcoes.o
+	gcc cobra.o funcoes.o $(LDFLAGS) -o cobra 
+
+cobra.o: cobra.c funcoes.o funcoes.h
+	gcc $(CFLAGS) -c cobra.c
+
+funcoes.o: funcoes.c funcoes.h
+	gcc $(CFLAGS) -c funcoes.c
 
 clean:
 	rm -f cobra
