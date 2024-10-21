@@ -2,12 +2,12 @@
 #include <stdlib.h>  
 #include <limits.h>
 
-typedef struct{ 
+typedef struct{ //estrutura de cada objeto do cache
     int numero;
     int prioridade;
 }objeto;
 
-typedef struct{
+typedef struct{ //estrutura para o heap que vai armazenar os objetos
     objeto *vetor;
     int quantidade;
     int cachetam;
@@ -15,26 +15,81 @@ typedef struct{
 
 typedef heap *ponteiro;
 
-ponteiro criar_heap(int cachetam){
+ponteiro criar_heap(int cachetam){ //funcao para criar o heap inicial
     ponteiro cache = malloc(sizeof(heap));
     cache->vetor = malloc(cachetam*(sizeof(objeto)));
     cache->quantidade = 0;
     cache->cachetam = cachetam;
     return cache;
 }
-void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam){
+
+void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam){ //calcula a partir da posicao no vetor da prox apariçao do mesmo número
     for(int i=0; i<seqtam; i++){
         comprioridade[i].numero = sequencia[i];
         comprioridade[i].prioridade = __INT_MAX__;
 
         for(int j = i+1; j<seqtam; j++){
             if(sequencia[j]==comprioridade[i].numero){
-                comprioridade[i].prioridade = j;
+                comprioridade[i].prioridade = j; 
                 break;
             }
         }
     }
-} 
+}
+
+int existe(ponteiro cache, int numero){ //verifica se o objeto já existe no cache
+    for(int i=0; i<cache->quantidade; i++){
+        if(cache->vetor[i].numero == numero){
+            return 1;
+        }
+    }
+    return 0;
+
+}
+#define PAI(i) ((i-1)/2)
+
+void subir(ponteiro cache, int k){ //reorganiza após cada insercao
+    if(k>0 && cache->vetor[PAI(k)].prioridade>cache->vetor[k].prioridade){
+        objeto atual = cache->vetor[k];
+        cache->vetor[k] = cache->vetor[PAI(k)];
+        cache->vetor[PAI(k)] = atual;
+
+        subir(cache, PAI(k));
+
+    }
+}
+void inserir(objeto comprioridade, ponteiro cache){
+    cache->vetor[cache->quantidade]= comprioridade;
+    cache->quantidade++;
+    subir(cache, cache->quantidade-1);
+}
+
+#define esquerdo(i) (2*i + 1)
+#define direito(i) (2*i + 2)
+void descer(ponteiro cache, int k){ //reorganiza após cada remoçao
+    int maior;
+    if(esquerdo(k)<cache->quantidade){
+        maior = esquerdo(k);
+        if(direito(k)<cache->quantidade && cache->vetor[esquerdo(k)].prioridade<cache->vetor[direito(k)].prioridade){
+            maior = direito(k);
+        }
+        if(cache->vetor[k].prioridade<cache->vetor[maior].prioridade){
+            objeto atual = cache->vetor[k];
+            cache->vetor[k] = cache->vetor[maior];
+            cache->vetor[maior]= atual;
+
+            descer(cache, maior);
+
+        }
+    }
+}
+
+
+void remover(ponteiro cache){
+    cache->vetor[0] = cache->vetor[cache->quantidade - 1]; 
+    cache->quantidade--;
+    descer(cache, 0);
+}
 
 int main(void){
     int cachetam; //tamanho do cache
@@ -42,23 +97,38 @@ int main(void){
     int seqtam; //tamanho da sequencia
     scanf("%d %d %d", &cachetam, &objetos, &seqtam);
 
-    int *sequencia = malloc(seqtam*sizeof(int));
+    int *sequencia = malloc(seqtam*sizeof(int)); //aloca todos os objetos que serao usados em um vetor
     for(int i=0; i<seqtam; i++){
         scanf("%d", &sequencia[i]);
     }
 
-    objeto *comprioridade = malloc(seqtam*sizeof(objeto));
+    objeto *comprioridade = malloc(seqtam*sizeof(objeto)); //cria um vetor com essas structs
 
     calcular_prioridade(comprioridade, sequencia, seqtam);
 
-    for (int i = 0; i < seqtam; i++) {
-        printf("Objeto: %d, Prioridade: %d\n", comprioridade[i].numero, comprioridade[i].prioridade);
+    ponteiro cache = criar_heap(cachetam);
+
+    int insercoes = 0;
+
+    for(int i= 0; i<seqtam; i++){
+        if(existe(cache, comprioridade[i].numero)==0){
+            if(cache->quantidade == cache->cachetam){
+                remover(cache);
+            }
+            inserir(comprioridade[i],cache);
+            insercoes++;
+        }
     }
 
-    ponteiro cache = criar_heap(cachetam);
+    printf("%d\n", insercoes);
+
+
+
     free(sequencia);
     free(comprioridade);
+    free(cache->vetor);
+    free(cache);
 
     return 0;
-    //funcao inserir no heap
+
 }
