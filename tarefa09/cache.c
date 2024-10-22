@@ -145,10 +145,10 @@ int main(void){
     printf("%d\n", insercoes);
 
     free(sequencia);
-    free(auxiliar);
     free(comprioridade);
     free(cache->vetor);
     free(cache);
+    free(auxiliar);
 
     return 0;
 }
