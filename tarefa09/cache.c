@@ -23,16 +23,18 @@ ponteiro criar_heap(int cachetam){ //funcao para criar o heap inicial
     return cache;
 }
 
-void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam){ //calcula a partir da posicao no vetor da prox apariçao do mesmo número
-    for(int i=0; i<seqtam; i++){
-        comprioridade[i].numero = sequencia[i];
-        comprioridade[i].prioridade = __INT_MAX__;
+void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam, int auxiliar[]){ //calcula a partir da posicao no vetor da prox apariçao do mesmo número
+    for(int i=seqtam; i>=0; i--){
+        if(auxiliar[sequencia[i]]==-1){
+            comprioridade[i].numero = sequencia[i];
+            comprioridade[i].prioridade = INT_MAX;
+            auxiliar[sequencia[i]] = i;
 
-        for(int j = i+1; j<seqtam; j++){
-            if(sequencia[j]==comprioridade[i].numero){
-                comprioridade[i].prioridade = j; 
-                break;
-            }
+        }
+        else{
+            comprioridade[i].numero = sequencia[i];
+            comprioridade[i].prioridade = auxiliar[sequencia[i]];
+            auxiliar[sequencia[i]] = i;
         }
     }
 }
@@ -119,7 +121,12 @@ int main(void){
 
     objeto *comprioridade = malloc(seqtam*sizeof(objeto)); //cria um vetor com essas structs
 
-    calcular_prioridade(comprioridade, sequencia, seqtam);
+    int *auxiliar = malloc(objetos*sizeof(int)); //aloca um vetor auxiliar para armazenar os objetos que serao usados
+    for(int i=0; i<objetos; i++){
+        auxiliar[i]=-1;
+    }
+
+    calcular_prioridade(comprioridade, sequencia, seqtam, auxiliar);
 
     ponteiro cache = criar_heap(cachetam);
 
@@ -136,12 +143,7 @@ int main(void){
             mudar_prioridade(cache, comprioridade[i]);
         }
     }
-
-
-
     printf("%d\n", insercoes);
-
-
 
     free(sequencia);
     free(comprioridade);
@@ -149,5 +151,4 @@ int main(void){
     free(cache);
 
     return 0;
-
 }
