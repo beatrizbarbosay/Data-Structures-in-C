@@ -29,7 +29,6 @@ void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam, int
             comprioridade[i].numero = sequencia[i];
             comprioridade[i].prioridade = INT_MAX;
             auxiliar[sequencia[i]] = i;
-
         }
         else{
             comprioridade[i].numero = sequencia[i];
@@ -146,6 +145,7 @@ int main(void){
     printf("%d\n", insercoes);
 
     free(sequencia);
+    free(auxiliar);
     free(comprioridade);
     free(cache->vetor);
     free(cache);
