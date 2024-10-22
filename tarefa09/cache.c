@@ -46,10 +46,10 @@ int existe(ponteiro cache, int numero){ //verifica se o objeto já existe no cac
     return 0;
 
 }
-#define PAI(i) ((i-1)/2)
 
+#define PAI(i) ((i-1)/2)
 void subir(ponteiro cache, int k){ //reorganiza após cada insercao
-    if(k>0 && cache->vetor[PAI(k)].prioridade>cache->vetor[k].prioridade){
+    if(k>0 && cache->vetor[PAI(k)].prioridade<cache->vetor[k].prioridade){
         objeto atual = cache->vetor[k];
         cache->vetor[k] = cache->vetor[PAI(k)];
         cache->vetor[PAI(k)] = atual;
@@ -58,6 +58,7 @@ void subir(ponteiro cache, int k){ //reorganiza após cada insercao
 
     }
 }
+
 void inserir(objeto comprioridade, ponteiro cache){
     cache->vetor[cache->quantidade]= comprioridade;
     cache->quantidade++;
@@ -84,12 +85,26 @@ void descer(ponteiro cache, int k){ //reorganiza após cada remoçao
     }
 }
 
-
 void remover(ponteiro cache){
     cache->vetor[0] = cache->vetor[cache->quantidade - 1]; 
     cache->quantidade--;
     descer(cache, 0);
 }
+
+void mudar_prioridade(ponteiro cache, objeto comprioridade){
+    for(int i=0; i<cache->quantidade; i++){
+        if(cache->vetor[i].numero == comprioridade.numero){
+            if(cache->vetor[i].prioridade<comprioridade.prioridade){
+                cache->vetor[i].prioridade = comprioridade.prioridade;
+                subir(cache, i);
+            }else{
+                cache->vetor[i].prioridade = comprioridade.prioridade;
+                descer(cache, i);
+            }
+        }
+    }
+}
+
 
 int main(void){
     int cachetam; //tamanho do cache
@@ -117,8 +132,12 @@ int main(void){
             }
             inserir(comprioridade[i],cache);
             insercoes++;
+        }else{
+            mudar_prioridade(cache, comprioridade[i]);
         }
     }
+
+
 
     printf("%d\n", insercoes);
 
