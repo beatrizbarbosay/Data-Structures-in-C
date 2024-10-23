@@ -23,14 +23,14 @@ ponteiro criar_heap(int cachetam){ //funcao para criar o heap inicial
     return cache;
 }
 
-void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam, int auxiliar[]){ //calcula a partir da posicao no vetor da prox apariçao do mesmo número
-    for(int i=seqtam; i>=0; i--){
-        if(auxiliar[sequencia[i]]==-1){
+void calcular_prioridade(objeto *comprioridade, int sequencia[], int seqtam, int auxiliar[]){ //calcula a prioridade com base no vetor auxiliar
+    for(int i=seqtam; i>=0; i--){//percorre o vetor de trás pra frente
+        if(auxiliar[sequencia[i]]==-1){//se o objeto ainda não foi usado
             comprioridade[i].numero = sequencia[i];
             comprioridade[i].prioridade = INT_MAX;
-            auxiliar[sequencia[i]] = i;
+            auxiliar[sequencia[i]] = i; //atribui a posicao que o objeto apareceu
         }
-        else{
+        else{//se o objeto já foi usado atribui a prioridade com base na ultima vez que ele apareceu
             comprioridade[i].numero = sequencia[i];
             comprioridade[i].prioridade = auxiliar[sequencia[i]];
             auxiliar[sequencia[i]] = i;
@@ -49,7 +49,7 @@ int existe(ponteiro cache, int numero){ //verifica se o objeto já existe no cac
 }
 
 #define PAI(i) ((i-1)/2)
-void subir(ponteiro cache, int k){ //reorganiza após cada insercao
+void subir(ponteiro cache, int k){ //reorganiza após cada insercao 
     if(k>0 && cache->vetor[PAI(k)].prioridade<cache->vetor[k].prioridade){
         objeto atual = cache->vetor[k];
         cache->vetor[k] = cache->vetor[PAI(k)];
@@ -81,7 +81,6 @@ void descer(ponteiro cache, int k){ //reorganiza após cada remoçao
             cache->vetor[maior]= atual;
 
             descer(cache, maior);
-
         }
     }
 }
@@ -92,9 +91,9 @@ void remover(ponteiro cache){
     descer(cache, 0);
 }
 
-void mudar_prioridade(ponteiro cache, objeto comprioridade){
-    for(int i=0; i<cache->quantidade; i++){
-        if(cache->vetor[i].numero == comprioridade.numero){
+void mudar_prioridade(ponteiro cache, objeto comprioridade){ //muda a prioridade atribuida ao objeto no heap se ele ja apareceu outra vez
+    for(int i=0; i<cache->quantidade; i++){ 
+        if(cache->vetor[i].numero == comprioridade.numero){//encontra a posicao do objeto no heap
             if(cache->vetor[i].prioridade<comprioridade.prioridade){
                 cache->vetor[i].prioridade = comprioridade.prioridade;
                 subir(cache, i);
@@ -132,19 +131,18 @@ int main(void){
     int insercoes = 0;
 
     for(int i= 0; i<seqtam; i++){
-        if(existe(cache, comprioridade[i].numero)==0){
-            if(cache->quantidade == cache->cachetam){
+        if(existe(cache, comprioridade[i].numero)==0){//se o objeto ainda não existe no cache
+            if(cache->quantidade == cache->cachetam){//se o cache estiver cheio
                 remover(cache);
             }
             inserir(comprioridade[i],cache);
             insercoes++;
-        }else{
+        }else{//se o objeto ja existe no cache
             mudar_prioridade(cache, comprioridade[i]);
         }
     }
     printf("%d\n", insercoes);
 
-    free(auxiliar);
     free(sequencia);
     free(comprioridade);
     free(cache->vetor);
