@@ -144,11 +144,10 @@ int main(void){
     }
     printf("%d\n", insercoes);
 
+    free(auxiliar);
     free(sequencia);
     free(comprioridade);
     free(cache->vetor);
     free(cache);
-    free(auxiliar);
-
     return 0;
 }
