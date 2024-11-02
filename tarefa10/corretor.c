@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <stdlib.h> // Include this header for malloc
 #define MAX 1783
 
-typedef struct no { // Define the 'no' type
+typedef struct no { 
     char chave[26];
     struct no *prox;
 } no;
@@ -54,6 +53,37 @@ int buscar_hash(phash t, char *chave){
     }
 }
 
+int caractere_mais(phash t, char *palavra){
+    int tam = strlen(palavra);
+    char novapalavra[26];
+        for(int i=0; i<tam; i++){ //percorre a palavra original
+        int k=0; 
+        for(int j=0; j<tam; j++){ //cria uma nova palavra sem o caractere i
+            if(j!=i){ 
+                novapalavra[k++] = palavra[j];
+            }
+        }
+        novapalavra[k] = '\0';
+        int hash_alfabeto = calcular_hash(alfabeto);
+        if(buscar_hash(t, alfabeto)==1){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int caractere_menos(phash t, char *palavra){
+}
+
+int caractere_trocado(phash t, char *palavra){
+
+}
+
+int amarelo(phash t, char *palavra) {
+    return caractere_mais(t, palavra) || caractere_menos(t, palavra) || caractere_trocado(t, palavra);
+}
+
+
 int main(void){
     int m, n;
     scanf("%d %d", &m, &n);
@@ -68,9 +98,12 @@ int main(void){
         scanf("%s", palavra);
         if(buscar_hash(tabela, palavra)){
             printf("%s: verde\n", palavra);
+        }else{
+            if(amarelo(tabela, palavra)){
+                printf("%s: amarelo\n", palavra);
+            }else{
+                printf("%s: vermelho\n", palavra);
+            }
         }
     }
-    
-
-
 }
