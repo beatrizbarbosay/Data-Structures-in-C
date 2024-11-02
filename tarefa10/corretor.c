@@ -4,7 +4,7 @@
 #include <string.h>
 #define MAX 1783
 
-typedef struct no { 
+typedef struct no { //estrutura para cada nó
     char chave[26];
     struct no *prox;
 } no;
@@ -37,12 +37,12 @@ void inserir_hash(phash t, char *chave){
     t->vetor[n] = inserir_lista(t->vetor[n], chave);
 }
 
-int buscar_hash(phash t, char *chave){
+int buscar_hash(phash t, char *chave){ 
     int n = calcular_hash(chave);
-    if (t->vetor[n] == NULL){
+    if (t->vetor[n] == NULL){ //se a lista do vetor do numero hash associado estiver vazia
         return 0;
     }else{
-        ponteiro p = t->vetor[n];
+        ponteiro p = t->vetor[n]; //percorre a lista ligada para ver se a palavra está lá
         while(p != NULL){
             if(strcmp(p->chave, chave) == 0){
                 return 1;
@@ -53,7 +53,7 @@ int buscar_hash(phash t, char *chave){
     }
 }
 
-int caractere_mais(phash t, char *palavra){
+int caractere_mais(phash t, char *palavra){ //caso da palavra amarela tiver um caractere a mais
     int tam = strlen(palavra);
     char novapalavra[27];
         for(int i=0; i<tam; i++){ //percorre a palavra original
@@ -71,12 +71,12 @@ int caractere_mais(phash t, char *palavra){
     return 0;
 }
 
-int caractere_menos(phash t, char *palavra){
+int caractere_menos(phash t, char *palavra){ //caso da palavra amarela tiver um caractere a menos
     int tam = strlen(palavra);
     char novapalavra[27];
-    char alfabeto[27]="abcdefghijklmnopqrstuvwxyz";
+    char alfabeto[27]="abcdefghijklmnopqrstuvwxyz"; 
     for(int i=0; i<=tam; i++){ //percorre a palavra original
-        for(int j=0; j<26; j++){
+        for(int j=0; j<26; j++){ //percorre as letras do alfabeto
             int k=0;
             for(int l=0; l<tam; l++){ //cria uma nova palavra com um caractere a mais
                 if(k==i){ //se a posição for igual a i, insere o caractere do alfabeto
@@ -95,14 +95,14 @@ int caractere_menos(phash t, char *palavra){
     }
     return 0;
 }
-
-int caractere_trocado(phash t, char *palavra){
+ 
+int caractere_trocado(phash t, char *palavra){ //caso da palavra amarela tiver um caractere trocado
     int tam = strlen(palavra);
     char novapalavra[26];
     char alfabeto[27]="abcdefghijklmnopqrstuvwxyz";
-    for(int i=0; i<tam; i++){ 
-        strcpy(novapalavra, palavra);
-        for(int j=0; j<26; j++){
+    for(int i=0; i<tam; i++){  //percorre a palavra original
+        strcpy(novapalavra, palavra); 
+        for(int j=0; j<26; j++){ //troca o caractere i por um caractere do alfabeto
             if(palavra[i] != alfabeto[j]){
                 novapalavra[i] = alfabeto[j];
                 if(buscar_hash(t, novapalavra)==1){
@@ -115,7 +115,7 @@ int caractere_trocado(phash t, char *palavra){
 
 }
 
-int amarelo(phash t, char *palavra) {
+int amarelo(phash t, char *palavra) { //todas as condicoes para uma palavra ser amarela
     return caractere_mais(t, palavra) || caractere_menos(t, palavra) || caractere_trocado(t, palavra);
 }
 
@@ -140,16 +140,16 @@ int main(void){
     int m, n;
     scanf("%d %d", &m, &n);
     phash tabela = (phash)malloc(sizeof(hash));
-    for (int i = 0; i < MAX; i++) {
+    for (int i = 0; i < MAX; i++) {//inicializa a tabela hash
         tabela->vetor[i] = NULL; 
     }
-    
-    for(int i=0; i<m; i++){
+
+    for(int i=0; i<m; i++){ //insere as palavras na tabela 
         char chave[26];
         scanf("%s", chave);
         inserir_hash(tabela, chave);
     }
-    for(int i =0; i<n; i++){
+    for(int i =0; i<n; i++){ //verifica cada entrada
         char palavra[26];
         scanf("%s", palavra);
         if(buscar_hash(tabela, palavra)){
