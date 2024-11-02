@@ -64,8 +64,7 @@ int caractere_mais(phash t, char *palavra){
             }
         }
         novapalavra[k] = '\0';
-        int hash_alfabeto = calcular_hash(alfabeto);
-        if(buscar_hash(t, alfabeto)==1){
+        if(buscar_hash(t, novapalavra)==1){ //busca os hash da nova palavra
             return 1;
         }
     }
@@ -73,9 +72,44 @@ int caractere_mais(phash t, char *palavra){
 }
 
 int caractere_menos(phash t, char *palavra){
+    int tam = strlen(palavra);
+    char novapalavra[27];
+    char alfabeto[27]="abcdefghijklmnopqrstuvwxyz";
+    for(int i=0; i<tam; i++){ //percorre a palavra original
+        for(int j=0; j<26; j++){
+            int k=0;
+            for(int l=0; l<tam; l++){ //cria uma nova palavra com um caractere a mais
+                if(l==i){ //se a posição for igual a i, insere o caractere do alfabeto
+                    novapalavra[k++] = alfabeto[j];
+                }else{ //se não, insere o caractere da palavra original
+                    novapalavra[k++] = palavra[l];
+                }
+            }
+            novapalavra[k] = '\0';
+            if(buscar_hash(t, novapalavra)==1){
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 int caractere_trocado(phash t, char *palavra){
+    int tam = strlen(palavra);
+    char novapalavra[26];
+    char alfabeto[27]="abcdefghijklmnopqrstuvwxyz";
+    for(int i=0; i<tam; i++){ 
+        strcpy(novapalavra, palavra);
+        for(int j=0; j<26; j++){
+            if(palavra[i] != alfabeto[j]){
+                novapalavra[i] = alfabeto[j];
+                if(buscar_hash(t, novapalavra)==1){
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
 
 }
 
