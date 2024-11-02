@@ -119,6 +119,22 @@ int amarelo(phash t, char *palavra) {
     return caractere_mais(t, palavra) || caractere_menos(t, palavra) || caractere_trocado(t, palavra);
 }
 
+void liberar_lista(ponteiro p) {
+    ponteiro atual;
+    while (p != NULL) {
+        atual = p;
+        p = p->prox;
+        free(atual);//libera cada nó
+    }
+}
+
+void liberar_hash(phash t) {
+    for (int i = 0; i < MAX; i++) {
+        liberar_lista(t->vetor[i]); //libera cada lista ligada
+    }
+    free(t);
+}
+
 
 int main(void){
     int m, n;
@@ -142,4 +158,6 @@ int main(void){
             }
         }
     }
+    liberar_hash(tabela);
+    return 0;
 }
