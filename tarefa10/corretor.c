@@ -140,6 +140,10 @@ int main(void){
     int m, n;
     scanf("%d %d", &m, &n);
     phash tabela = (phash)malloc(sizeof(hash));
+    for (int i = 0; i < MAX; i++) {
+        tabela->vetor[i] = NULL; 
+    }
+    
     for(int i=0; i<m; i++){
         char chave[26];
         scanf("%s", chave);
