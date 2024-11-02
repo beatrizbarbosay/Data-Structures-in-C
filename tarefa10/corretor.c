@@ -79,11 +79,13 @@ int caractere_menos(phash t, char *palavra){
         for(int j=0; j<26; j++){
             int k=0;
             for(int l=0; l<tam; l++){ //cria uma nova palavra com um caractere a mais
-                if(l==i){ //se a posição for igual a i, insere o caractere do alfabeto
+                if(k==i){ //se a posição for igual a i, insere o caractere do alfabeto
                     novapalavra[k++] = alfabeto[j];
-                }else{ //se não, insere o caractere da palavra original
-                    novapalavra[k++] = palavra[l];
                 }
+                novapalavra[k++] = palavra[l];
+            }
+            if(i==tam){ //se i for igual ao tamanho da palavra, insere o caractere do alfabeto no final
+                novapalavra[k++] = alfabeto[j];
             }
             novapalavra[k] = '\0';
             if(buscar_hash(t, novapalavra)==1){
