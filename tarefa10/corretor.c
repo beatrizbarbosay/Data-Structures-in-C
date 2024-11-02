@@ -55,7 +55,7 @@ int buscar_hash(phash t, char *chave){
 
 int caractere_mais(phash t, char *palavra){
     int tam = strlen(palavra);
-    char novapalavra[26];
+    char novapalavra[27];
         for(int i=0; i<tam; i++){ //percorre a palavra original
         int k=0; 
         for(int j=0; j<tam; j++){ //cria uma nova palavra sem o caractere i
@@ -75,7 +75,7 @@ int caractere_menos(phash t, char *palavra){
     int tam = strlen(palavra);
     char novapalavra[27];
     char alfabeto[27]="abcdefghijklmnopqrstuvwxyz";
-    for(int i=0; i<tam; i++){ //percorre a palavra original
+    for(int i=0; i<=tam; i++){ //percorre a palavra original
         for(int j=0; j<26; j++){
             int k=0;
             for(int l=0; l<tam; l++){ //cria uma nova palavra com um caractere a mais
