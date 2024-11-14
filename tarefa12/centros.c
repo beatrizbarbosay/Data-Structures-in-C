@@ -16,22 +16,18 @@ typedef struct{
 
 typedef grafo *ponteirografo;
 
-ponteirografo criar_grafo(int vertices){ //matriz de adjacencia 
-    int i,j;
+ponteirografo criar_grafo(int vertices) {
     ponteirografo g = malloc(sizeof(grafo));
-    g->vertices=vertices;
-    g->adj = malloc(vertices*sizeof(int *));
-    for(i=0; i<vertices; i++){
-        g->adj[i] = malloc(vertices*sizeof(int));
-    }
-    for(i=0; i<vertices; i++){
-        for(j=0; j<vertices; j++){
-            g->adj[i][j]=0;
+    g->vertices = vertices;
+    g->adj = malloc(vertices * sizeof(int *));
+    for (int i = 0; i < vertices; i++) {
+        g->adj[i] = malloc(vertices * sizeof(int));
+        for (int j = 0; j < vertices; j++) {
+            g->adj[i][j] = (i == j) ? 0 : INT_MAX;
         }
     }
     return g;
 }
-
 void inserir_cidade(ponteirografo g, int u, int v, int distancia){
     g->adj[u][v] = distancia;
     g->adj[v][u] = distancia;
@@ -55,7 +51,7 @@ int* dijkstra(ponteirografo g, int origem) { //retorna um vetor com as distancia
         visitados[i] = 0;
     }
     distancias[origem] = 0;
-    for(int i=0; i<vertices; i++){
+    for(int i=0; i<vertices-1; i++){
         int distanciaminima = INT_MAX;
         int u = -1;
         for(int j=0; j<vertices; j++){
@@ -104,7 +100,40 @@ int main(void){
         }
         inserir_cidade(mapa, u, v, distancia);
     }
+    int distanciamaxima = INT_MAX;
+    int centro1, centro2= -1;
 
+    for(int i=0; i<vertices; i++){
+        int *distancias = dijkstra(mapa, i);
+
+        for(int j= i+1; j<vertices; j++){
+            int *distancia_centros = dijkstra(mapa, j);
+            int maisperto = 0;
+            for(int k=0; k<vertices; k++){
+                if(distancias[k] != INT_MAX || distancia_centros[k] != INT_MAX){
+                    int menordistancia;
+                    if(distancias[k] < distancia_centros[k]){
+                        menordistancia = distancias[k];
+                    }else{
+                        menordistancia = distancia_centros[k];
+                    }
+                    if(menordistancia> maisperto){
+                        maisperto = menordistancia;
+                    }
+                }
+            }
+            int populacaototal = listacity[i].populacao + listacity[j].populacao;
+            if(maisperto < distanciamaxima || (maisperto == distanciamaxima && populacaototal > listacity[centro1].populacao + listacity[centro2].populacao)){
+                distanciamaxima = maisperto;
+                centro1 = i;
+                centro2 = j;
+            }
+            free(distancia_centros);
+        }
+        free(distancias);
+    }
+    printf("Centros de distribuicao: %s e %s\n", listacity[centro1].nome, listacity[centro2].nome);
+    printf("Distancia de atendimento: %d\n", distanciamaxima);
 
     destroi_grafo(mapa);
     return 0;
