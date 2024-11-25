@@ -3,12 +3,12 @@
 #include <string.h>
 #include <limits.h>
 
-struct cidade{
+struct cidade{ 
     char nome[50];
     int populacao;
 };
 
-typedef struct{
+typedef struct{ 
     int n;
     int **adj;
     int vertices;
@@ -16,18 +16,22 @@ typedef struct{
 
 typedef grafo *ponteirografo;
 
-ponteirografo criar_grafo(int vertices) {
+ponteirografo criar_grafo(int vertices){ //matriz de adjacencia 
+    int i,j;
     ponteirografo g = malloc(sizeof(grafo));
-    g->vertices = vertices;
-    g->adj = malloc(vertices * sizeof(int *));
-    for (int i = 0; i < vertices; i++) {
-        g->adj[i] = malloc(vertices * sizeof(int));
-        for (int j = 0; j < vertices; j++) {
-            g->adj[i][j] = (i == j) ? 0 : INT_MAX;
+    g->vertices=vertices;
+    g->adj = malloc(vertices*sizeof(int *));
+    for(i=0; i<vertices; i++){
+        g->adj[i] = malloc(vertices*sizeof(int));
+    }
+    for(i=0; i<vertices; i++){
+        for(j=0; j<vertices; j++){
+            g->adj[i][j]=0;
         }
     }
     return g;
 }
+
 void inserir_cidade(ponteirografo g, int u, int v, int distancia){
     g->adj[u][v] = distancia;
     g->adj[v][u] = distancia;
@@ -42,34 +46,45 @@ void destroi_grafo(ponteirografo mapa){
     free(mapa);
 }
 
-int* dijkstra(ponteirografo g, int origem) { //retorna um vetor com as distancias minima de uma cidade p todas as outras
+int** dijkstra(ponteirografo g, int origem) {
     int vertices = g->vertices;
-    int* distancias = malloc(vertices * sizeof(int*)); //armazena as distancias minimas
-    int* visitados = malloc(vertices * sizeof(int*)); //marcar os que ja foram visitados
-    for(int i=0; i<vertices; i++){ //inicializa vertices e distancias
-        distancias[i] = INT_MAX;
+    int** distancias = malloc(vertices * sizeof(int*)); //matriz das distancias minimas de uma cidade para todas as outras
+    for (int i = 0; i < vertices; i++) {
+        distancias[i] = malloc(vertices * sizeof(int));
+    }
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            distancias[i][j] = INT_MAX; //inicializa com infinito
+        }
+    }
+    distancias[origem][origem] = 0; //de um vertice pra ele mesmo
+
+    int* visitados = malloc(vertices * sizeof(int)); //para controlar os vertices ja visitados
+    for (int i = 0; i < vertices; i++) {
         visitados[i] = 0;
     }
-    distancias[origem] = 0;
-    for(int i=0; i<vertices-1; i++){
-        int distanciaminima = INT_MAX;
-        int u = -1;
-        for(int j=0; j<vertices; j++){
-            if(visitados[j]==0 && distancias[j]<=distanciaminima){//atualiza a distancia minima se encontrar menor
-                distanciaminima = distancias[j];
-                u = j;
+
+    for (int i = 0; i< vertices - 1; i++) { //encontra o menor caminho para cada vértice
+        int mindistancia = INT_MAX;
+        int minvertice;
+        for (int v = 0; v < vertices; v++) {
+            if (visitados[v] == 0 && distancias[origem][v] <= mindistancia) { // menor distancia ainda nao visitada
+                mindistancia = distancias[origem][v];
+                minvertice = v;
             }
         }
-        visitados[u] = 1;
-        for(int v=0; v<vertices; v++){ //atualiza as distancias dos vertices adjacentes
-            if(!visitados[v]&& g->adj[u][v] != INT_MAX && distancias[u] != INT_MAX && distancias[u]+g->adj[u][v]<distancias[v]){
-                distancias[v] = distancias[u] + g->adj[u][v];
+        visitados[minvertice] = 1;
+        for (int v = 0; v < vertices; v++) {
+            if (visitados[v] == 0 && g->adj[minvertice][v] && distancias[origem][minvertice] != INT_MAX && (distancias[origem][minvertice] + g->adj[minvertice][v] < distancias[origem][v])) { //se a distancia do vertice minvertice para v for menor que a distancia atual
+                distancias[origem][v] = distancias[origem][minvertice] + g->adj[minvertice][v]; //atualiza as distancias
             }
         }
     }
+
     free(visitados);
     return distancias;
 }
+
 
 int main(void){
     int vertices;
@@ -100,41 +115,18 @@ int main(void){
         }
         inserir_cidade(mapa, u, v, distancia);
     }
-    int distanciamaxima = INT_MAX;
-    int centro1, centro2= -1;
-
+    int **distancias= malloc(vertices*sizeof(int*));
     for(int i=0; i<vertices; i++){
-        int *distancias = dijkstra(mapa, i);
-
-        for(int j= i+1; j<vertices; j++){
-            int *distancia_centros = dijkstra(mapa, j);
-            int maisperto = 0;
-            for(int k=0; k<vertices; k++){
-                if(distancias[k] != INT_MAX || distancia_centros[k] != INT_MAX){
-                    int menordistancia;
-                    if(distancias[k] < distancia_centros[k]){
-                        menordistancia = distancias[k];
-                    }else{
-                        menordistancia = distancia_centros[k];
-                    }
-                    if(menordistancia> maisperto){
-                        maisperto = menordistancia;
-                    }
-                }
-            }
-            int populacaototal = listacity[i].populacao + listacity[j].populacao;
-            if(maisperto < distanciamaxima || (maisperto == distanciamaxima && populacaototal > listacity[centro1].populacao + listacity[centro2].populacao)){
-                distanciamaxima = maisperto;
-                centro1 = i;
-                centro2 = j;
-            }
-            free(distancia_centros);
-        }
-        free(distancias);
+        distancias[i] = dijkstra(mapa, i)[i];        
     }
-    printf("Centros de distribuicao: %s e %s\n", listacity[centro1].nome, listacity[centro2].nome);
-    printf("Distancia de atendimento: %d\n", distanciamaxima);
 
+
+
+    for (int i = 0; i < vertices; i++) {
+        free(distancias[i]);
+    }
+
+    free(distancias);
     destroi_grafo(mapa);
     return 0;
 }
