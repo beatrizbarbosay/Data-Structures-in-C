@@ -85,6 +85,41 @@ int** dijkstra(ponteirografo g, int origem) {
     return distancias;
 }
 
+void encontrar_centros(int vertices, int **distancias, struct cidade listacity[]) {
+    int centro1 = -1;
+    int centro2 = -1;
+    int minimo = INT_MAX; //maior distancia na matriz, pra cada cidade
+    int populacao = 0;
+
+    for (int i = 0; i < vertices; i++) { //passa pelos pares de cidade
+        for (int j = i + 1; j < vertices; j++) {
+            int maiordistancia = 0; //maior distancia de atendimento
+
+            for (int k = 0; k < vertices; k++) { //maior distancia de atendimento para o par
+                int distanciacentro; //menor distancia da cidade k para os possíveis centros
+                if(distancias[k][i]<distancias[k][j]){
+                    distanciacentro = distancias[k][i];   
+                }else{
+                    distanciacentro = distancias[k][j];
+                }
+                if (distanciacentro > maiordistancia) {
+                    maiordistancia = distanciacentro;
+                }
+            }
+
+            int soma = listacity[i].populacao + listacity[j].populacao; //soma da populacao
+            if (maiordistancia < minimo || (maiordistancia == minimo && soma > populacao)) { //define os pares com base nas distancias de atendimento e somas
+                minimo = maiordistancia;
+                populacao = soma;
+                centro1 = i;
+                centro2 = j;
+            }
+        }
+    }
+
+    printf("Centros de distribuicao: %s e %s\n", listacity[centro1].nome, listacity[centro2].nome);
+    printf("Distancia de atendimento: %d\n", minimo);
+}
 
 int main(void){
     int vertices;
@@ -119,9 +154,7 @@ int main(void){
     for(int i=0; i<vertices; i++){
         distancias[i] = dijkstra(mapa, i)[i];        
     }
-
-
-
+    encontrar_centros(vertices, distancias, listacity);
     for (int i = 0; i < vertices; i++) {
         free(distancias[i]);
     }
