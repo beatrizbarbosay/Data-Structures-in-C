@@ -154,11 +154,23 @@ int main(void){
     for(int i=0; i<vertices; i++){
         distancias[i] = dijkstra(mapa, i)[i];        
     }
+
+    for (int i = 0; i < vertices; i++) { //libera memoria da matriz dijkstra
+        int **distancias_atual = dijkstra(mapa, i);
+        for (int j = 0; j < vertices; j++) {
+            distancias[i][j] = distancias_atual[i][j];
+        }
+        for (int j = 0; j < vertices; j++) {
+            free(distancias_atual[j]);
+        }
+        free(distancias_atual);
+    }
+
+    
     encontrar_centros(vertices, distancias, listacity);
     for (int i = 0; i < vertices; i++) {
         free(distancias[i]);
     }
-
     free(distancias);
     destroi_grafo(mapa);
     return 0;
