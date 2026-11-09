@@ -1,0 +1,5 @@
+# Course-provided expected outputs are data, not ReScript source code.
+*.res linguist-generated
+*.in linguist-generated
+# Shared test helpers should not dominate repository language statistics.
+**/testar.py linguist-vendored
