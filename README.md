@@ -37,4 +37,3 @@ make -C tarefa09
 
 Individual lab behavior and required input formats vary. This is archived university coursework; not all exercises are complete or independently verified on modern systems.
 
-<sub>Built with C, debugging, and a lot of curiosity. ✨</sub>
